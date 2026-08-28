@@ -1,0 +1,1074 @@
+[
+  {
+    "id": "nvr-01",
+    "name": "Gravador Intelbras NVD-01 (Portaria)",
+    "ip": "192.168.1.201",
+    "port": 37777,
+    "nvr": "N/A",
+    "channel": 0
+  },
+  {
+    "id": "nvr-02",
+    "name": "Gravador Intelbras NVD-02 (Estoque)",
+    "ip": "192.168.1.202",
+    "port": 37777,
+    "nvr": "N/A",
+    "channel": 0
+  },
+  {
+    "id": "nvr-03",
+    "name": "Gravador Intelbras NVD-03 (Loja)",
+    "ip": "192.168.1.203",
+    "port": 37777,
+    "nvr": "N/A",
+    "channel": 0
+  },
+  {
+    "id": "nvr-04",
+    "name": "Gravador Intelbras iNVD-01 (Galpão A)",
+    "ip": "192.168.1.204",
+    "port": 37777,
+    "nvr": "N/A",
+    "channel": 0
+  },
+  {
+    "id": "nvr-05",
+    "name": "Gravador Intelbras iNVD-02 (Galpão B)",
+    "ip": "192.168.1.205",
+    "port": 37777,
+    "nvr": "N/A",
+    "channel": 0
+  },
+  {
+    "id": "nvr-06",
+    "name": "Gravador Intelbras iNVD-03 (Perímetro)",
+    "ip": "192.168.1.206",
+    "port": 37777,
+    "nvr": "N/A",
+    "channel": 0
+  },
+  {
+    "id": "cam-001",
+    "name": "Câmera 001 - Setor B",
+    "ip": "192.168.2.1",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 1
+  },
+  {
+    "id": "cam-002",
+    "name": "Câmera 002 - Setor C",
+    "ip": "192.168.2.2",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 1
+  },
+  {
+    "id": "cam-003",
+    "name": "Câmera 003 - Setor D",
+    "ip": "192.168.2.3",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 1
+  },
+  {
+    "id": "cam-004",
+    "name": "Câmera 004 - Setor E",
+    "ip": "192.168.2.4",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 1
+  },
+  {
+    "id": "cam-005",
+    "name": "Câmera 005 - Setor F",
+    "ip": "192.168.2.5",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 1
+  },
+  {
+    "id": "cam-006",
+    "name": "Câmera 006 - Setor A",
+    "ip": "192.168.2.6",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 1
+  },
+  {
+    "id": "cam-007",
+    "name": "Câmera 007 - Setor B",
+    "ip": "192.168.2.7",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 2
+  },
+  {
+    "id": "cam-008",
+    "name": "Câmera 008 - Setor C",
+    "ip": "192.168.2.8",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 2
+  },
+  {
+    "id": "cam-009",
+    "name": "Câmera 009 - Setor D",
+    "ip": "192.168.2.9",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 2
+  },
+  {
+    "id": "cam-010",
+    "name": "Câmera 010 - Setor E",
+    "ip": "192.168.2.10",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 2
+  },
+  {
+    "id": "cam-011",
+    "name": "Câmera 011 - Setor F",
+    "ip": "192.168.2.11",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 2
+  },
+  {
+    "id": "cam-012",
+    "name": "Câmera 012 - Setor A",
+    "ip": "192.168.2.12",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 2
+  },
+  {
+    "id": "cam-013",
+    "name": "Câmera 013 - Setor B",
+    "ip": "192.168.2.13",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 3
+  },
+  {
+    "id": "cam-014",
+    "name": "Câmera 014 - Setor C",
+    "ip": "192.168.2.14",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 3
+  },
+  {
+    "id": "cam-015",
+    "name": "Câmera 015 - Setor D",
+    "ip": "192.168.2.15",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 3
+  },
+  {
+    "id": "cam-016",
+    "name": "Câmera 016 - Setor E",
+    "ip": "192.168.2.16",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 3
+  },
+  {
+    "id": "cam-017",
+    "name": "Câmera 017 - Setor F",
+    "ip": "192.168.2.17",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 3
+  },
+  {
+    "id": "cam-018",
+    "name": "Câmera 018 - Setor A",
+    "ip": "192.168.2.18",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 3
+  },
+  {
+    "id": "cam-019",
+    "name": "Câmera 019 - Setor B",
+    "ip": "192.168.2.19",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 4
+  },
+  {
+    "id": "cam-020",
+    "name": "Câmera 020 - Setor C",
+    "ip": "192.168.2.20",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 4
+  },
+  {
+    "id": "cam-021",
+    "name": "Câmera 021 - Setor D",
+    "ip": "192.168.2.21",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 4
+  },
+  {
+    "id": "cam-022",
+    "name": "Câmera 022 - Setor E",
+    "ip": "192.168.2.22",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 4
+  },
+  {
+    "id": "cam-023",
+    "name": "Câmera 023 - Setor F",
+    "ip": "192.168.2.23",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 4
+  },
+  {
+    "id": "cam-024",
+    "name": "Câmera 024 - Setor A",
+    "ip": "192.168.2.24",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 4
+  },
+  {
+    "id": "cam-025",
+    "name": "Câmera 025 - Setor B",
+    "ip": "192.168.2.25",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 5
+  },
+  {
+    "id": "cam-026",
+    "name": "Câmera 026 - Setor C",
+    "ip": "192.168.2.26",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 5
+  },
+  {
+    "id": "cam-027",
+    "name": "Câmera 027 - Setor D",
+    "ip": "192.168.2.27",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 5
+  },
+  {
+    "id": "cam-028",
+    "name": "Câmera 028 - Setor E",
+    "ip": "192.168.2.28",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 5
+  },
+  {
+    "id": "cam-029",
+    "name": "Câmera 029 - Setor F",
+    "ip": "192.168.2.29",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 5
+  },
+  {
+    "id": "cam-030",
+    "name": "Câmera 030 - Setor A",
+    "ip": "192.168.2.30",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 5
+  },
+  {
+    "id": "cam-031",
+    "name": "Câmera 031 - Setor B",
+    "ip": "192.168.2.31",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 6
+  },
+  {
+    "id": "cam-032",
+    "name": "Câmera 032 - Setor C",
+    "ip": "192.168.2.32",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 6
+  },
+  {
+    "id": "cam-033",
+    "name": "Câmera 033 - Setor D",
+    "ip": "192.168.2.33",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 6
+  },
+  {
+    "id": "cam-034",
+    "name": "Câmera 034 - Setor E",
+    "ip": "192.168.2.34",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 6
+  },
+  {
+    "id": "cam-035",
+    "name": "Câmera 035 - Setor F",
+    "ip": "192.168.2.35",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 6
+  },
+  {
+    "id": "cam-036",
+    "name": "Câmera 036 - Setor A",
+    "ip": "192.168.2.36",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 6
+  },
+  {
+    "id": "cam-037",
+    "name": "Câmera 037 - Setor B",
+    "ip": "192.168.2.37",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 7
+  },
+  {
+    "id": "cam-038",
+    "name": "Câmera 038 - Setor C",
+    "ip": "192.168.2.38",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 7
+  },
+  {
+    "id": "cam-039",
+    "name": "Câmera 039 - Setor D",
+    "ip": "192.168.2.39",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 7
+  },
+  {
+    "id": "cam-040",
+    "name": "Câmera 040 - Setor E",
+    "ip": "192.168.2.40",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 7
+  },
+  {
+    "id": "cam-041",
+    "name": "Câmera 041 - Setor F",
+    "ip": "192.168.2.41",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 7
+  },
+  {
+    "id": "cam-042",
+    "name": "Câmera 042 - Setor A",
+    "ip": "192.168.2.42",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 7
+  },
+  {
+    "id": "cam-043",
+    "name": "Câmera 043 - Setor B",
+    "ip": "192.168.2.43",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 8
+  },
+  {
+    "id": "cam-044",
+    "name": "Câmera 044 - Setor C",
+    "ip": "192.168.2.44",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 8
+  },
+  {
+    "id": "cam-045",
+    "name": "Câmera 045 - Setor D",
+    "ip": "192.168.2.45",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 8
+  },
+  {
+    "id": "cam-046",
+    "name": "Câmera 046 - Setor E",
+    "ip": "192.168.2.46",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 8
+  },
+  {
+    "id": "cam-047",
+    "name": "Câmera 047 - Setor F",
+    "ip": "192.168.2.47",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 8
+  },
+  {
+    "id": "cam-048",
+    "name": "Câmera 048 - Setor A",
+    "ip": "192.168.2.48",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 8
+  },
+  {
+    "id": "cam-049",
+    "name": "Câmera 049 - Setor B",
+    "ip": "192.168.2.49",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 9
+  },
+  {
+    "id": "cam-050",
+    "name": "Câmera 050 - Setor C",
+    "ip": "192.168.2.50",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 9
+  },
+  {
+    "id": "cam-051",
+    "name": "Câmera 051 - Setor D",
+    "ip": "192.168.2.51",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 9
+  },
+  {
+    "id": "cam-052",
+    "name": "Câmera 052 - Setor E",
+    "ip": "192.168.2.52",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 9
+  },
+  {
+    "id": "cam-053",
+    "name": "Câmera 053 - Setor F",
+    "ip": "192.168.2.53",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 9
+  },
+  {
+    "id": "cam-054",
+    "name": "Câmera 054 - Setor A",
+    "ip": "192.168.2.54",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 9
+  },
+  {
+    "id": "cam-055",
+    "name": "Câmera 055 - Setor B",
+    "ip": "192.168.2.55",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 10
+  },
+  {
+    "id": "cam-056",
+    "name": "Câmera 056 - Setor C",
+    "ip": "192.168.2.56",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 10
+  },
+  {
+    "id": "cam-057",
+    "name": "Câmera 057 - Setor D",
+    "ip": "192.168.2.57",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 10
+  },
+  {
+    "id": "cam-058",
+    "name": "Câmera 058 - Setor E",
+    "ip": "192.168.2.58",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 10
+  },
+  {
+    "id": "cam-059",
+    "name": "Câmera 059 - Setor F",
+    "ip": "192.168.2.59",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 10
+  },
+  {
+    "id": "cam-060",
+    "name": "Câmera 060 - Setor A",
+    "ip": "192.168.2.60",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 10
+  },
+  {
+    "id": "cam-061",
+    "name": "Câmera 061 - Setor B",
+    "ip": "192.168.2.61",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 11
+  },
+  {
+    "id": "cam-062",
+    "name": "Câmera 062 - Setor C",
+    "ip": "192.168.2.62",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 11
+  },
+  {
+    "id": "cam-063",
+    "name": "Câmera 063 - Setor D",
+    "ip": "192.168.2.63",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 11
+  },
+  {
+    "id": "cam-064",
+    "name": "Câmera 064 - Setor E",
+    "ip": "192.168.2.64",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 11
+  },
+  {
+    "id": "cam-065",
+    "name": "Câmera 065 - Setor F",
+    "ip": "192.168.2.65",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 11
+  },
+  {
+    "id": "cam-066",
+    "name": "Câmera 066 - Setor A",
+    "ip": "192.168.2.66",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 11
+  },
+  {
+    "id": "cam-067",
+    "name": "Câmera 067 - Setor B",
+    "ip": "192.168.2.67",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 12
+  },
+  {
+    "id": "cam-068",
+    "name": "Câmera 068 - Setor C",
+    "ip": "192.168.2.68",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 12
+  },
+  {
+    "id": "cam-069",
+    "name": "Câmera 069 - Setor D",
+    "ip": "192.168.2.69",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 12
+  },
+  {
+    "id": "cam-070",
+    "name": "Câmera 070 - Setor E",
+    "ip": "192.168.2.70",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 12
+  },
+  {
+    "id": "cam-071",
+    "name": "Câmera 071 - Setor F",
+    "ip": "192.168.2.71",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 12
+  },
+  {
+    "id": "cam-072",
+    "name": "Câmera 072 - Setor A",
+    "ip": "192.168.2.72",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 12
+  },
+  {
+    "id": "cam-073",
+    "name": "Câmera 073 - Setor B",
+    "ip": "192.168.2.73",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 13
+  },
+  {
+    "id": "cam-074",
+    "name": "Câmera 074 - Setor C",
+    "ip": "192.168.2.74",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 13
+  },
+  {
+    "id": "cam-075",
+    "name": "Câmera 075 - Setor D",
+    "ip": "192.168.2.75",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 13
+  },
+  {
+    "id": "cam-076",
+    "name": "Câmera 076 - Setor E",
+    "ip": "192.168.2.76",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 13
+  },
+  {
+    "id": "cam-077",
+    "name": "Câmera 077 - Setor F",
+    "ip": "192.168.2.77",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 13
+  },
+  {
+    "id": "cam-078",
+    "name": "Câmera 078 - Setor A",
+    "ip": "192.168.2.78",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 13
+  },
+  {
+    "id": "cam-079",
+    "name": "Câmera 079 - Setor B",
+    "ip": "192.168.2.79",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 14
+  },
+  {
+    "id": "cam-080",
+    "name": "Câmera 080 - Setor C",
+    "ip": "192.168.2.80",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 14
+  },
+  {
+    "id": "cam-081",
+    "name": "Câmera 081 - Setor D",
+    "ip": "192.168.2.81",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 14
+  },
+  {
+    "id": "cam-082",
+    "name": "Câmera 082 - Setor E",
+    "ip": "192.168.2.82",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 14
+  },
+  {
+    "id": "cam-083",
+    "name": "Câmera 083 - Setor F",
+    "ip": "192.168.2.83",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 14
+  },
+  {
+    "id": "cam-084",
+    "name": "Câmera 084 - Setor A",
+    "ip": "192.168.2.84",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 14
+  },
+  {
+    "id": "cam-085",
+    "name": "Câmera 085 - Setor B",
+    "ip": "192.168.2.85",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 15
+  },
+  {
+    "id": "cam-086",
+    "name": "Câmera 086 - Setor C",
+    "ip": "192.168.2.86",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 15
+  },
+  {
+    "id": "cam-087",
+    "name": "Câmera 087 - Setor D",
+    "ip": "192.168.2.87",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 15
+  },
+  {
+    "id": "cam-088",
+    "name": "Câmera 088 - Setor E",
+    "ip": "192.168.2.88",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 15
+  },
+  {
+    "id": "cam-089",
+    "name": "Câmera 089 - Setor F",
+    "ip": "192.168.2.89",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 15
+  },
+  {
+    "id": "cam-090",
+    "name": "Câmera 090 - Setor A",
+    "ip": "192.168.2.90",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 15
+  },
+  {
+    "id": "cam-091",
+    "name": "Câmera 091 - Setor B",
+    "ip": "192.168.2.91",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 16
+  },
+  {
+    "id": "cam-092",
+    "name": "Câmera 092 - Setor C",
+    "ip": "192.168.2.92",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 16
+  },
+  {
+    "id": "cam-093",
+    "name": "Câmera 093 - Setor D",
+    "ip": "192.168.2.93",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 16
+  },
+  {
+    "id": "cam-094",
+    "name": "Câmera 094 - Setor E",
+    "ip": "192.168.2.94",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 16
+  },
+  {
+    "id": "cam-095",
+    "name": "Câmera 095 - Setor F",
+    "ip": "192.168.2.95",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 16
+  },
+  {
+    "id": "cam-096",
+    "name": "Câmera 096 - Setor A",
+    "ip": "192.168.2.96",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 16
+  },
+  {
+    "id": "cam-097",
+    "name": "Câmera 097 - Setor B",
+    "ip": "192.168.2.97",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 17
+  },
+  {
+    "id": "cam-098",
+    "name": "Câmera 098 - Setor C",
+    "ip": "192.168.2.98",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 17
+  },
+  {
+    "id": "cam-099",
+    "name": "Câmera 099 - Setor D",
+    "ip": "192.168.2.99",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 17
+  },
+  {
+    "id": "cam-100",
+    "name": "Câmera 100 - Setor E",
+    "ip": "192.168.2.100",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 17
+  },
+  {
+    "id": "cam-101",
+    "name": "Câmera 101 - Setor F",
+    "ip": "192.168.2.101",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 17
+  },
+  {
+    "id": "cam-102",
+    "name": "Câmera 102 - Setor A",
+    "ip": "192.168.2.102",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 17
+  },
+  {
+    "id": "cam-103",
+    "name": "Câmera 103 - Setor B",
+    "ip": "192.168.2.103",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 18
+  },
+  {
+    "id": "cam-104",
+    "name": "Câmera 104 - Setor C",
+    "ip": "192.168.2.104",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 18
+  },
+  {
+    "id": "cam-105",
+    "name": "Câmera 105 - Setor D",
+    "ip": "192.168.2.105",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 18
+  },
+  {
+    "id": "cam-106",
+    "name": "Câmera 106 - Setor E",
+    "ip": "192.168.2.106",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 18
+  },
+  {
+    "id": "cam-107",
+    "name": "Câmera 107 - Setor F",
+    "ip": "192.168.2.107",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 18
+  },
+  {
+    "id": "cam-108",
+    "name": "Câmera 108 - Setor A",
+    "ip": "192.168.2.108",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 18
+  },
+  {
+    "id": "cam-109",
+    "name": "Câmera 109 - Setor B",
+    "ip": "192.168.2.109",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 19
+  },
+  {
+    "id": "cam-110",
+    "name": "Câmera 110 - Setor C",
+    "ip": "192.168.2.110",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 19
+  },
+  {
+    "id": "cam-111",
+    "name": "Câmera 111 - Setor D",
+    "ip": "192.168.2.111",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 19
+  },
+  {
+    "id": "cam-112",
+    "name": "Câmera 112 - Setor E",
+    "ip": "192.168.2.112",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 19
+  },
+  {
+    "id": "cam-113",
+    "name": "Câmera 113 - Setor F",
+    "ip": "192.168.2.113",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 19
+  },
+  {
+    "id": "cam-114",
+    "name": "Câmera 114 - Setor A",
+    "ip": "192.168.2.114",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 19
+  },
+  {
+    "id": "cam-115",
+    "name": "Câmera 115 - Setor B",
+    "ip": "192.168.2.115",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 20
+  },
+  {
+    "id": "cam-116",
+    "name": "Câmera 116 - Setor C",
+    "ip": "192.168.2.116",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 20
+  },
+  {
+    "id": "cam-117",
+    "name": "Câmera 117 - Setor D",
+    "ip": "192.168.2.117",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 20
+  },
+  {
+    "id": "cam-118",
+    "name": "Câmera 118 - Setor E",
+    "ip": "192.168.2.118",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 20
+  },
+  {
+    "id": "cam-119",
+    "name": "Câmera 119 - Setor F",
+    "ip": "192.168.2.119",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 20
+  },
+  {
+    "id": "cam-120",
+    "name": "Câmera 120 - Setor A",
+    "ip": "192.168.2.120",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 20
+  },
+  {
+    "id": "cam-121",
+    "name": "Câmera 121 - Setor B",
+    "ip": "192.168.2.121",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 21
+  },
+  {
+    "id": "cam-122",
+    "name": "Câmera 122 - Setor C",
+    "ip": "192.168.2.122",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 21
+  },
+  {
+    "id": "cam-123",
+    "name": "Câmera 123 - Setor D",
+    "ip": "192.168.2.123",
+    "port": 554,
+    "nvr": "NVD-03 (Loja)",
+    "channel": 21
+  },
+  {
+    "id": "cam-124",
+    "name": "Câmera 124 - Setor E",
+    "ip": "192.168.2.124",
+    "port": 554,
+    "nvr": "iNVD-01 (Galpão A)",
+    "channel": 21
+  },
+  {
+    "id": "cam-125",
+    "name": "Câmera 125 - Setor F",
+    "ip": "192.168.2.125",
+    "port": 554,
+    "nvr": "iNVD-02 (Galpão B)",
+    "channel": 21
+  },
+  {
+    "id": "cam-126",
+    "name": "Câmera 126 - Setor A",
+    "ip": "192.168.2.126",
+    "port": 554,
+    "nvr": "iNVD-03 (Perímetro)",
+    "channel": 21
+  },
+  {
+    "id": "cam-127",
+    "name": "Câmera 127 - Setor B",
+    "ip": "192.168.2.127",
+    "port": 554,
+    "nvr": "NVD-01 (Portaria)",
+    "channel": 22
+  },
+  {
+    "id": "cam-128",
+    "name": "Câmera 128 - Setor C",
+    "ip": "192.168.2.128",
+    "port": 554,
+    "nvr": "NVD-02 (Estoque)",
+    "channel": 22
+  }
+]

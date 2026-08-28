@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CFTV Monitor - Central de Câmeras & Notificações</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @keyframes pulse-red {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .offline-pulse {
+      animation: pulse-red 1.5s infinite;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #4b5563;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans">
+
+  <!-- Top Navbar -->
+  <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40 px-6 py-4 flex flex-wrap items-center justify-between shadow-lg gap-4">
+    <div class="flex items-center space-x-3">
+      <div class="bg-indigo-600 p-2.5 rounded-xl text-white shadow-md shadow-indigo-600/30">
+        <i class="fa-solid fa-video text-xl"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-bold tracking-wide flex items-center gap-2">
+          CFTV Monitor
+          <button onclick="toggleExecutionMode()" id="mode-badge" title="Clique para alternar entre Modo Real e Simulação" class="text-xs px-2.5 py-0.5 rounded-full bg-blue-900/60 hover:bg-blue-800 text-blue-300 border border-blue-700 transition cursor-pointer flex items-center gap-1.5">
+            <i class="fa-solid fa-flask text-[10px]"></i>
+            <span id="mode-text">Online</span>
+          </button>
+        </h1>
+        <p class="text-xs text-slate-400">Monitoramento Contínuo & Alertas em Tempo Real</p>
+      </div>
+    </div>
+
+    <!-- Live Status Counters & Action Buttons -->
+    <div class="flex flex-wrap items-center gap-3">
+      <div class="flex items-center space-x-2">
+        <div class="bg-slate-800/80 px-3.5 py-1.5 rounded-xl border border-slate-700/60 text-center">
+          <span class="text-[10px] text-slate-400 block uppercase font-bold">Total</span>
+          <span id="stat-total" class="text-base font-bold text-white">0</span>
+        </div>
+        <div class="bg-emerald-950/50 px-3.5 py-1.5 rounded-xl border border-emerald-800/50 text-center">
+          <span class="text-[10px] text-emerald-400 block uppercase font-bold">Online</span>
+          <span id="stat-online" class="text-base font-bold text-emerald-400">0</span>
+        </div>
+        <div class="bg-rose-950/50 px-3.5 py-1.5 rounded-xl border border-rose-800/50 text-center">
+          <span class="text-[10px] text-rose-400 block uppercase font-bold">Offline</span>
+          <span id="stat-offline" class="text-base font-bold text-rose-400">0</span>
+        </div>
+        <div class="bg-amber-950/50 px-3.5 py-1.5 rounded-xl border border-amber-800/50 text-center">
+          <span class="text-[10px] text-amber-400 block uppercase font-bold">Instáveis</span>
+          <span id="stat-pending" class="text-base font-bold text-amber-400">0</span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button onclick="openCrudModal('create')" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition text-white px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-emerald-600/30">
+          <i class="fa-solid fa-plus"></i>
+          <span>Nova Câmera</span>
+        </button>
+
+        <button onclick="openCrudModal('manage')" class="bg-slate-800 hover:bg-slate-700 active:scale-95 transition text-slate-200 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-slate-700">
+          <i class="fa-solid fa-sliders"></i>
+          <span>Gerenciar</span>
+        </button>
+
+        <button onclick="openSettingsModal()" class="bg-slate-800 hover:bg-slate-700 active:scale-95 transition text-slate-200 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-slate-700" title="Configurações e Notificações">
+          <i class="fa-solid fa-gear text-indigo-400"></i>
+          <span>Ajustes & Alertas</span>
+        </button>
+
+        <button onclick="triggerScan()" id="btn-scan" class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 transition text-white px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-indigo-600/30">
+          <i class="fa-solid fa-arrows-rotate" id="scan-icon"></i>
+          <span>Varredura</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-6 max-w-[1600px] w-full mx-auto space-y-6">
+
+    <!-- Filters & Search Bar -->
+    <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl flex flex-col md:flex-row gap-4 justify-between items-center">
+      <div class="relative w-full md:w-96">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+        <input type="text" id="search-input" oninput="applyFilters()" placeholder="Buscar por nome, IP, NVR ou canal..." class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+        <span class="text-xs text-slate-400 mr-1">Filtrar:</span>
+        <button onclick="setFilter('all')" id="filter-all" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-600 text-white transition">Todas</button>
+        <button onclick="setFilter('offline')" id="filter-offline" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 transition">Apenas Offline</button>
+        <button onclick="setFilter('pending')" id="filter-pending" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 transition">Instáveis</button>
+        <select id="nvr-filter" onchange="applyFilters()" class="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+          <option value="">Todos os Gravadores</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Status Banner -->
+    <div class="flex justify-between items-center text-xs text-slate-400 px-2">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+        <span id="last-update">Aguardando dados...</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span id="interval-info" class="text-slate-400 font-mono">Intervalo: 15s</span>
+        <span id="cycle-info" class="font-mono">Ciclo #0</span>
+      </div>
+    </div>
+
+    <!-- Camera Grid -->
+    <div id="camera-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+      <!-- Cards renderizados via JS -->
+    </div>
+
+    <!-- Events & Notifications Log Drawer -->
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+          <i class="fa-solid fa-clock-rotate-left text-indigo-400"></i>
+          Histórico de Eventos Recentes
+        </h2>
+        <button onclick="clearEventLogs()" class="text-xs text-slate-400 hover:text-slate-200">Limpar</button>
+      </div>
+      <div id="event-logs" class="space-y-2 max-h-48 overflow-y-auto custom-scrollbar pr-2 text-xs">
+        <div class="text-slate-500 italic">Nenhum evento registrado até o momento.</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ==================== MODAL CONFIGURAÇÕES & NOTIFICAÇÕES ==================== -->
+  <div id="settings-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
+        <div class="flex items-center gap-3">
+          <div class="bg-indigo-600/20 text-indigo-400 p-2 rounded-lg">
+            <i class="fa-solid fa-gear text-lg"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-100">Configurações & Notificações</h3>
+            <p class="text-xs text-slate-400">Ajuste o tempo de requisição e configure alertas no WhatsApp e Telegram</p>
+          </div>
+        </div>
+        <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-200 text-lg p-1.5 rounded-lg hover:bg-slate-800 transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Settings Tabs -->
+      <div class="flex border-b border-slate-800 bg-slate-950/60 px-6 pt-3 gap-2">
+        <button onclick="switchSettingsTab('tab-set-general')" id="set-btn-general" class="set-tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg border-b-2 border-indigo-500 text-indigo-400 transition flex items-center gap-2">
+          <i class="fa-solid fa-stopwatch"></i>
+          Tempo & Varredura
+        </button>
+        <button onclick="switchSettingsTab('tab-set-telegram')" id="set-btn-telegram" class="set-tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-2">
+          <i class="fa-brands fa-telegram text-sky-400"></i>
+          Telegram
+        </button>
+        <button onclick="switchSettingsTab('tab-set-whatsapp')" id="set-btn-whatsapp" class="set-tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-2">
+          <i class="fa-brands fa-whatsapp text-emerald-400"></i>
+          WhatsApp
+        </button>
+        <button onclick="switchSettingsTab('tab-set-templates')" id="set-btn-templates" class="set-tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-2">
+          <i class="fa-solid fa-envelope-open-text text-amber-400"></i>
+          Modelos de Mensagem (Templates)
+        </button>
+      </div>
+
+      <!-- Settings Body -->
+      <div class="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-5">
+
+        <!-- ABA 1: TEMPO & VARREDURA -->
+        <div id="tab-set-general" class="space-y-4">
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
+            <h4 class="text-xs font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-clock"></i> Parâmetros de Requisição
+            </h4>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">
+                  Intervalo entre Varreduras (Segundos)
+                </label>
+                <div class="flex gap-2">
+                  <input type="number" id="set-check-interval" min="5" max="300" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+                  <button type="button" onclick="document.getElementById('set-check-interval').value = 10" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-300">10s</button>
+                  <button type="button" onclick="document.getElementById('set-check-interval').value = 15" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-300">15s</button>
+                  <button type="button" onclick="document.getElementById('set-check-interval').value = 30" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-300">30s</button>
+                  <button type="button" onclick="document.getElementById('set-check-interval').value = 60" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-300">60s</button>
+                </div>
+                <span class="text-[10px] text-slate-500 mt-1 block">Tempo que o sistema aguarda antes de iniciar um novo ciclo de checagem.</span>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">
+                  Timeout de Conexão por Câmera (Segundos)
+                </label>
+                <div class="flex gap-2">
+                  <input type="number" step="0.5" id="set-timeout" min="0.5" max="10.0" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+                  <button type="button" onclick="document.getElementById('set-timeout').value = 1.0" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-300">1.0s</button>
+                  <button type="button" onclick="document.getElementById('set-timeout').value = 2.0" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-300">2.0s</button>
+                  <button type="button" onclick="document.getElementById('set-timeout').value = 3.0" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-300">3.0s</button>
+                </div>
+                <span class="text-[10px] text-slate-500 mt-1 block">Tempo limite para a câmera responder antes de contar falha.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
+            <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-shield-halved"></i> Filtro Anti-Falso Positivo (Anti-Flapping)
+            </h4>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Falhas Consecutivas para Alertar</label>
+                <input type="number" id="set-failure-threshold" min="1" max="10" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+                <span class="text-[10px] text-slate-500 mt-1 block">Só dispara alerta se a câmera falhar N ciclos seguidos (ex: 3 ciclos).</span>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Sucessos para Considerar Normalizado</label>
+                <input type="number" id="set-recovery-threshold" min="1" max="10" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+                <span class="text-[10px] text-slate-500 mt-1 block">Quantas respostas positivas consecutivas antes de enviar "Voltou ao normal".</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA 2: TELEGRAM -->
+        <div id="tab-set-telegram" class="hidden space-y-4">
+          <div class="bg-sky-950/30 border border-sky-800/40 p-3.5 rounded-xl text-xs text-sky-300 flex items-start gap-2.5">
+            <i class="fa-brands fa-telegram text-xl mt-0.5"></i>
+            <div>
+              <strong>Como obter as credenciais do Telegram (100% Gratuito):</strong><br>
+              1. Abra o Telegram e procure por <strong>@BotFather</strong> -> Digite <code>/newbot</code> e copie o <strong>Token</strong>.<br>
+              2. Inicie conversa com seu bot ou adicione em um grupo e obtenha o <strong>Chat ID</strong> (ex: via @userinfobot ou @RawDataBot).
+            </div>
+          </div>
+
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
+            <label class="flex items-center gap-2.5 cursor-pointer">
+              <input type="checkbox" id="set-tg-enabled" class="w-4 h-4 rounded text-sky-600 focus:ring-0 bg-slate-900 border-slate-700">
+              <span class="text-xs font-bold text-slate-200">Ativar Notificações no Telegram</span>
+            </label>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Token do Bot (Bot Token)</label>
+              <input type="text" id="set-tg-token" placeholder="Ex: 123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-sky-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Chat ID (Destinatário ou Grupo)</label>
+              <input type="text" id="set-tg-chatid" placeholder="Ex: 123456789 ou -100123456789" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-sky-500 focus:outline-none">
+            </div>
+
+            <label class="flex items-center gap-2.5 cursor-pointer">
+              <input type="checkbox" id="set-tg-snapshot" checked class="w-4 h-4 rounded text-sky-600 focus:ring-0 bg-slate-900 border-slate-700">
+              <span class="text-xs text-slate-300">Anexar foto do último frame junto com o alerta</span>
+            </label>
+
+            <div class="pt-2 flex justify-between items-center border-t border-slate-800/80">
+              <span id="tg-test-feedback" class="text-xs"></span>
+              <button type="button" onclick="testNotificationChannel('telegram')" class="px-4 py-2 rounded-xl text-xs font-semibold bg-sky-600 hover:bg-sky-500 text-white transition flex items-center gap-1.5 shadow-lg shadow-sky-600/30">
+                <i class="fa-solid fa-paper-plane"></i>
+                <span>Enviar Teste no Telegram</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA 3: WHATSAPP -->
+        <div id="tab-set-whatsapp" class="hidden space-y-4">
+          <div class="bg-emerald-950/30 border border-emerald-800/40 p-3.5 rounded-xl text-xs text-emerald-300 flex items-start gap-2.5">
+            <i class="fa-brands fa-whatsapp text-xl mt-0.5"></i>
+            <div>
+              <strong>Integração com WhatsApp:</strong><br>
+              Suporta <strong>Evolution API</strong> (Docker Open-Source), <strong>Z-API</strong> ou qualquer <strong>Webhook HTTP</strong>.
+            </div>
+          </div>
+
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
+            <label class="flex items-center gap-2.5 cursor-pointer">
+              <input type="checkbox" id="set-wa-enabled" class="w-4 h-4 rounded text-emerald-600 focus:ring-0 bg-slate-900 border-slate-700">
+              <span class="text-xs font-bold text-slate-200">Ativar Notificações no WhatsApp</span>
+            </label>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Provedor / Tipo</label>
+                <select id="set-wa-provider" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-emerald-500 focus:outline-none">
+                  <option value="evolution">Evolution API (Recomendada)</option>
+                  <option value="zapi">Z-API</option>
+                  <option value="webhook">Webhook Genérico (POST JSON)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Nome da Instância</label>
+                <input type="text" id="set-wa-instance" value="cftv" placeholder="cftv" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-emerald-500 focus:outline-none">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">URL da API</label>
+              <input type="text" id="set-wa-url" placeholder="Ex: http://localhost:8080 ou https://api.meuservidor.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-emerald-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">API Key / Token de Autenticação</label>
+              <input type="password" id="set-wa-key" placeholder="Chave da API ou Token" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-emerald-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Número Destinatário (com DDI e DDD)</label>
+              <input type="text" id="set-wa-target" placeholder="Ex: 5511999999999" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-emerald-500 focus:outline-none">
+            </div>
+
+            <label class="flex items-center gap-2.5 cursor-pointer">
+              <input type="checkbox" id="set-wa-snapshot" checked class="w-4 h-4 rounded text-emerald-600 focus:ring-0 bg-slate-900 border-slate-700">
+              <span class="text-xs text-slate-300">Anexar foto do último frame</span>
+            </label>
+
+            <div class="pt-2 flex justify-between items-center border-t border-slate-800/80">
+              <span id="wa-test-feedback" class="text-xs"></span>
+              <button type="button" onclick="testNotificationChannel('whatsapp')" class="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition flex items-center gap-1.5 shadow-lg shadow-emerald-600/30">
+                <i class="fa-solid fa-paper-plane"></i>
+                <span>Enviar Teste no WhatsApp</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA 4: MODELOS DE MENSAGEM -->
+        <div id="tab-set-templates" class="hidden space-y-5">
+          
+          <div class="bg-amber-950/30 border border-amber-800/40 p-3.5 rounded-xl text-xs text-amber-300 space-y-1.5">
+            <div class="font-bold flex items-center gap-1.5">
+              <i class="fa-solid fa-tags"></i>
+              <span>Tags Dinâmicas Disponíveis (clique para copiar):</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 text-[11px] font-mono text-amber-200">
+              <span class="bg-amber-900/50 px-2 py-0.5 rounded border border-amber-700/60 cursor-pointer" onclick="navigator.clipboard.writeText('{camera_name}')">{camera_name}</span>
+              <span class="bg-amber-900/50 px-2 py-0.5 rounded border border-amber-700/60 cursor-pointer" onclick="navigator.clipboard.writeText('{camera_ip}')">{camera_ip}</span>
+              <span class="bg-amber-900/50 px-2 py-0.5 rounded border border-amber-700/60 cursor-pointer" onclick="navigator.clipboard.writeText('{camera_port}')">{camera_port}</span>
+              <span class="bg-amber-900/50 px-2 py-0.5 rounded border border-amber-700/60 cursor-pointer" onclick="navigator.clipboard.writeText('{nvr_name}')">{nvr_name}</span>
+              <span class="bg-amber-900/50 px-2 py-0.5 rounded border border-amber-700/60 cursor-pointer" onclick="navigator.clipboard.writeText('{channel}')">{channel}</span>
+              <span class="bg-amber-900/50 px-2 py-0.5 rounded border border-amber-700/60 cursor-pointer" onclick="navigator.clipboard.writeText('{failures}')">{failures}</span>
+              <span class="bg-amber-900/50 px-2 py-0.5 rounded border border-amber-700/60 cursor-pointer" onclick="navigator.clipboard.writeText('{timestamp}')">{timestamp}</span>
+              <span class="bg-amber-900/50 px-2 py-0.5 rounded border border-amber-700/60 cursor-pointer" onclick="navigator.clipboard.writeText('{total_channels}')">{total_channels}</span>
+              <span class="bg-amber-900/50 px-2 py-0.5 rounded border border-amber-700/60 cursor-pointer" onclick="navigator.clipboard.writeText('{offline_count}')">{offline_count}</span>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Template 1: Gravador Inteiro Offline -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-rose-900/40 space-y-2">
+              <div class="flex justify-between items-center">
+                <label class="text-xs font-bold text-rose-400 flex items-center gap-1.5">
+                  <i class="fa-solid fa-server"></i>
+                  <span>Alerta: Gravador (DVR/NVD) Inteiro Offline</span>
+                </label>
+                <span class="text-[10px] text-slate-500 font-mono">Disparado quando múltiplos canais caem juntos</span>
+              </div>
+              <textarea id="tpl-nvr-down" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-slate-200 font-mono focus:border-rose-500 focus:outline-none custom-scrollbar"></textarea>
+            </div>
+
+            <!-- Template 2: Gravador Inteiro Restabelecido -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-emerald-900/40 space-y-2">
+              <div class="flex justify-between items-center">
+                <label class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                  <i class="fa-solid fa-circle-check"></i>
+                  <span>Recuperado: Gravador (DVR/NVD) Inteiro Voltou</span>
+                </label>
+              </div>
+              <textarea id="tpl-nvr-rec" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-slate-200 font-mono focus:border-emerald-500 focus:outline-none custom-scrollbar"></textarea>
+            </div>
+
+            <!-- Template 3: Câmera Individual Offline -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+              <div class="flex justify-between items-center">
+                <label class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                  <i class="fa-solid fa-video"></i>
+                  <span>Alerta: Câmera / Canal Individual Offline</span>
+                </label>
+              </div>
+              <textarea id="tpl-cam-down" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-slate-200 font-mono focus:border-indigo-500 focus:outline-none custom-scrollbar"></textarea>
+            </div>
+
+            <!-- Template 4: Câmera Individual Restabelecida -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+              <div class="flex justify-between items-center">
+                <label class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                  <i class="fa-solid fa-video"></i>
+                  <span>Recuperado: Câmera / Canal Individual Voltou</span>
+                </label>
+              </div>
+              <textarea id="tpl-cam-rec" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-slate-200 font-mono focus:border-indigo-500 focus:outline-none custom-scrollbar"></textarea>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center pt-2 border-t border-slate-800">
+            <button type="button" onclick="restoreDefaultTemplates()" class="px-3.5 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition flex items-center gap-1.5">
+              <i class="fa-solid fa-rotate-left"></i> Restaurar Padrões
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-4 bg-slate-950 border-t border-slate-800 flex justify-end gap-3">
+        <button onclick="closeSettingsModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition">Fechar</button>
+        <button onclick="saveSettings()" class="px-5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30 transition flex items-center gap-2">
+          <i class="fa-solid fa-floppy-disk"></i>
+          <span>Salvar Configurações</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL LIGHTBOX / ZOOM SNAPSHOT ==================== -->
+  <div id="lightbox-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col">
+      <div class="px-5 py-3 border-b border-slate-800 flex items-center justify-between bg-slate-950">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-camera text-indigo-400"></i>
+          <span class="font-bold text-sm text-slate-200" id="lightbox-cam-name">Visualização da Câmera</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="refreshLightboxSnapshot()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-arrows-rotate" id="lightbox-refresh-icon"></i>
+            <span>Nova Foto</span>
+          </button>
+          <button onclick="closeLightbox()" class="text-slate-400 hover:text-slate-200 text-lg p-1">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+      <div class="relative aspect-video bg-black flex items-center justify-center overflow-hidden">
+        <img id="lightbox-img" src="" alt="Snapshot" class="w-full h-full object-contain">
+        <div id="lightbox-badge" class="absolute top-3 left-3 bg-black/70 backdrop-blur-md border border-slate-700 px-3 py-1 rounded-lg text-xs font-mono text-slate-200">
+          Carregando...
+        </div>
+      </div>
+      <div class="p-4 bg-slate-950 text-xs text-slate-400 flex flex-wrap justify-between items-center border-t border-slate-800 font-mono">
+        <span id="lightbox-cam-info">IP: 0.0.0.0</span>
+        <span id="lightbox-cam-time">Último Frame: 00:00:00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL CRUD DE CÂMERAS ==================== -->
+  <div id="crud-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
+        <div class="flex items-center gap-3">
+          <div class="bg-indigo-600/20 text-indigo-400 p-2 rounded-lg">
+            <i class="fa-solid fa-sliders text-lg"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-100" id="crud-modal-title">Gerenciar Câmeras & Gravadores</h3>
+            <p class="text-xs text-slate-400">Adicione, edite ou remova dispositivos do inventário com suporte a foto</p>
+          </div>
+        </div>
+        <button onclick="closeCrudModal()" class="text-slate-400 hover:text-slate-200 text-lg p-1.5 rounded-lg hover:bg-slate-800 transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="flex border-b border-slate-800 bg-slate-950/60 px-6 pt-3 gap-2">
+        <button onclick="switchTab('tab-manage')" id="tab-btn-manage" class="crud-tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg border-b-2 border-indigo-500 text-indigo-400 transition flex items-center gap-2">
+          <i class="fa-solid fa-list-check"></i>
+          Lista de Dispositivos (<span id="tab-count">0</span>)
+        </button>
+        <button onclick="switchTab('tab-form')" id="tab-btn-form" class="crud-tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-2">
+          <i class="fa-solid fa-plus" id="form-tab-icon"></i>
+          <span id="form-tab-label">Cadastrar Nova Câmera</span>
+        </button>
+        <button onclick="switchTab('tab-bulk')" id="tab-btn-bulk" class="crud-tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-2">
+          <i class="fa-solid fa-layer-group"></i>
+          Cadastro em Lote (Faixa de IPs)
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-6">
+
+        <!-- ABA 1: TABELA DE GERENCIAMENTO -->
+        <div id="tab-manage" class="space-y-4">
+          <div class="flex justify-between items-center">
+            <input type="text" id="crud-table-search" oninput="renderCrudTable()" placeholder="Filtrar nesta lista..." class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 w-64">
+            <button onclick="openNewCameraTab()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+              <i class="fa-solid fa-plus"></i> + Nova Câmera
+            </button>
+          </div>
+
+          <div class="border border-slate-800 rounded-xl overflow-hidden">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-950 text-slate-400 uppercase font-semibold border-b border-slate-800">
+                <tr>
+                  <th class="p-3">Foto</th>
+                  <th class="p-3">Nome</th>
+                  <th class="p-3">IP / Portas</th>
+                  <th class="p-3">Gravador (NVR)</th>
+                  <th class="p-3">Canal</th>
+                  <th class="p-3 text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="crud-table-body" class="divide-y divide-slate-800/60">
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ABA 2: FORMULÁRIO DE CADASTRO / EDIÇÃO -->
+        <div id="tab-form" class="hidden space-y-4 max-w-2xl mx-auto">
+          <input type="hidden" id="form-cam-id">
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="md:col-span-2">
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Nome / Identificação da Câmera *</label>
+              <input type="text" id="form-name" placeholder="Ex: Câmera Balcão Principal" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder-slate-500 focus:border-indigo-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Endereço IP *</label>
+              <input type="text" id="form-ip" placeholder="Ex: 192.168.1.101" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder-slate-500 focus:border-indigo-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Porta de Conexão (Ping / RTSP)</label>
+              <div class="flex gap-2">
+                <input type="number" id="form-port" value="554" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+                <button type="button" onclick="document.getElementById('form-port').value = 554" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-300">554</button>
+                <button type="button" onclick="document.getElementById('form-port').value = 37777" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-300">37777</button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Gravador NVR / iNVD Associado</label>
+              <input type="text" id="form-nvr" list="nvr-datalist" placeholder="Ex: NVD-01 (Portaria)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder-slate-500 focus:border-indigo-500 focus:outline-none">
+              <datalist id="nvr-datalist"></datalist>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Canal no Gravador</label>
+              <input type="number" id="form-channel" value="1" min="0" max="128" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+            </div>
+
+            <!-- Credenciais de Acesso e Snapshot -->
+            <div class="md:col-span-2 pt-2 border-t border-slate-800">
+              <span class="text-xs font-bold text-indigo-400 block mb-2">📸 Configurações de Acesso & Captura de Foto (Snapshot)</span>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Usuário da Câmera / NVR</label>
+              <input type="text" id="form-username" value="admin" placeholder="admin" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Senha da Câmera / NVR</label>
+              <input type="password" id="form-password" placeholder="Digite a senha de acesso" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Porta HTTP (Snapshot CGI)</label>
+              <input type="number" id="form-http-port" value="80" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">URL Snapshot Personalizada (Opcional)</label>
+              <input type="text" id="form-snapshot-url" placeholder="Padrão Intelbras automático" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+            </div>
+
+          </div>
+
+          <div class="flex justify-between items-center pt-4 border-t border-slate-800">
+            <div>
+              <button type="button" id="form-delete-btn" onclick="deleteCurrentFormCamera()" class="hidden px-4 py-2 rounded-xl text-xs font-semibold bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 border border-rose-800/60 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-trash-can"></i> Excluir Câmera
+              </button>
+            </div>
+            <div class="flex gap-3">
+              <button type="button" onclick="switchTab('tab-manage')" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition">Cancelar</button>
+              <button type="button" onclick="submitCameraForm()" class="px-5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30 transition flex items-center gap-2">
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span id="form-submit-btn-text">Salvar Câmera</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA 3: CADASTRO EM LOTE -->
+        <div id="tab-bulk" class="hidden space-y-5 max-w-2xl mx-auto">
+          
+          <!-- Seletor de Tipo de Cadastro em Lote -->
+          <div class="grid grid-cols-2 gap-3 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
+            <button type="button" onclick="setBulkMode('dvr')" id="bulk-mode-btn-dvr" class="py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 bg-indigo-600 text-white shadow">
+              <i class="fa-solid fa-server"></i>
+              <span>Canais de um Gravador (NVD/DVR)</span>
+            </button>
+            <button type="button" onclick="setBulkMode('ip_range')" id="bulk-mode-btn-ip" class="py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200">
+              <i class="fa-solid fa-network-wired"></i>
+              <span>Faixa de IPs (Câmeras IP)</span>
+            </button>
+          </div>
+
+          <!-- MODO 1: CANAIS DO MESMO GRAVADOR (DVR/NVR) -->
+          <div id="bulk-section-dvr" class="space-y-4">
+            <div class="bg-indigo-950/40 border border-indigo-800/40 p-3.5 rounded-xl text-xs text-indigo-300">
+              <i class="fa-solid fa-circle-info mr-1"></i>
+              Cadastre todos os canais de um mesmo <strong>NVD/iNVD Intelbras</strong> mantendo o mesmo IP e variando os canais (ex: 1 ao 16).
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Nome / Identificação do Gravador *</label>
+                <input type="text" id="bulk-dvr-name" value="Gravador NVD-01" placeholder="Ex: NVD-01 (Portaria)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Endereço IP do Gravador *</label>
+                <input type="text" id="bulk-dvr-ip" value="10.0.0.201" placeholder="Ex: 10.0.0.201 ou 192.168.3.100" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Intervalo de Canais</label>
+                <div class="flex items-center gap-3">
+                  <div class="flex items-center gap-2 w-1/2">
+                    <span class="text-xs text-slate-400">Do Canal:</span>
+                    <input type="number" id="bulk-ch-start" value="1" min="1" max="128" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+                  </div>
+                  <div class="flex items-center gap-2 w-1/2">
+                    <span class="text-xs text-slate-400">Até:</span>
+                    <input type="number" id="bulk-ch-end" value="16" min="1" max="128" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+                  </div>
+                </div>
+                <div class="flex gap-2 mt-2">
+                  <span class="text-[10px] text-slate-500 self-center">Predefinições:</span>
+                  <button type="button" onclick="setChannelRange(1, 8)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-300">8 Canais (1-8)</button>
+                  <button type="button" onclick="setChannelRange(1, 16)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-300 font-bold text-indigo-400">16 Canais (1-16)</button>
+                  <button type="button" onclick="setChannelRange(1, 32)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-300">32 Canais (1-32)</button>
+                  <button type="button" onclick="setChannelRange(1, 64)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-300">64 Canais (1-64)</button>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Porta de Serviço (Ping TCP)</label>
+                <div class="flex gap-2">
+                  <input type="number" id="bulk-dvr-port" value="37777" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+                  <button type="button" onclick="document.getElementById('bulk-dvr-port').value = 37777" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-300" title="Intelbras nativa">37777</button>
+                  <button type="button" onclick="document.getElementById('bulk-dvr-port').value = 554" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] text-slate-300" title="RTSP">554</button>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Porta HTTP (Snapshot CGI)</label>
+                <input type="number" id="bulk-dvr-http-port" value="80" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Usuário do Gravador</label>
+                <input type="text" id="bulk-dvr-user" value="admin" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Senha do Gravador</label>
+                <input type="password" id="bulk-dvr-pass" placeholder="Senha de acesso do NVD" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+              </div>
+            </div>
+          </div>
+
+          <!-- MODO 2: FAIXA DE IPS (CÂMERAS INDIVIDUAIS) -->
+          <div id="bulk-section-ip" class="hidden space-y-4">
+            <div class="bg-indigo-950/40 border border-indigo-800/40 p-3.5 rounded-xl text-xs text-indigo-300">
+              <i class="fa-solid fa-circle-info mr-1"></i>
+              Cadastre câmeras com <strong>IPs sequenciais</strong> (ex: 192.168.3.100, 192.168.3.101, etc.).
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Nome Base</label>
+                <input type="text" id="bulk-name" value="Câmera Setor A" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">IP Inicial</label>
+                <input type="text" id="bulk-ip" value="192.168.3.100" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Quantidade</label>
+                <input type="number" id="bulk-count" value="16" min="1" max="128" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Porta RTSP / HTTP</label>
+                <div class="flex gap-2">
+                  <input type="number" id="bulk-port" value="554" class="w-1/2 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100" placeholder="RTSP 554">
+                  <input type="number" id="bulk-http-port" value="80" class="w-1/2 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100" placeholder="HTTP 80">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Usuário Padrão</label>
+                <input type="text" id="bulk-user" value="admin" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Senha Padrão</label>
+                <input type="password" id="bulk-pass" placeholder="Senha das câmeras" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Gravador (NVR / iNVD Associado)</label>
+                <input type="text" id="bulk-nvr" value="NVD-01" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+            <button onclick="submitBulkGenerate()" class="px-5 py-2.5 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 transition flex items-center gap-2">
+              <i class="fa-solid fa-bolt"></i>
+              <span id="bulk-submit-btn-text">Gerar Canais do Gravador</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentFilter = 'all';
+    let devicesData = [];
+    let nvrSet = new Set();
+    let currentActiveCamId = null;
+
+    async function fetchStatus() {
+      try {
+        const res = await fetch('/api/status');
+        if (!res.ok) return;
+        const data = await res.json();
+        devicesData = data.devices;
+        
+        document.getElementById('stat-total').innerText = data.summary.total;
+        document.getElementById('stat-online').innerText = data.summary.online;
+        document.getElementById('stat-offline').innerText = data.summary.offline;
+        document.getElementById('stat-pending').innerText = data.summary.pending;
+        document.getElementById('tab-count').innerText = data.devices.length;
+        
+        document.getElementById('last-update').innerText = `Última varredura: ${data.last_scan} (${data.scan_time_ms} ms)`;
+        document.getElementById('cycle-info').innerText = `Ciclo #${data.cycle}`;
+        document.getElementById('interval-info').innerText = `Intervalo: ${data.check_interval}s`;
+        
+        const modeBadge = document.getElementById('mode-badge');
+        const modeText = document.getElementById('mode-text');
+        if (data.is_mock) {
+          modeBadge.className = 'text-xs px-2.5 py-0.5 rounded-full bg-amber-900/60 hover:bg-amber-800 text-amber-300 border border-amber-700 transition cursor-pointer flex items-center gap-1.5';
+          modeText.innerText = "Simulação (Mock)";
+        } else {
+          modeBadge.className = 'text-xs px-2.5 py-0.5 rounded-full bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 border border-emerald-700 transition cursor-pointer flex items-center gap-1.5';
+          modeText.innerText = "Rede Real";
+        }
+
+        populateNVRFilter();
+        applyFilters();
+
+      } catch (err) {
+        console.error("Erro ao obter status:", err);
+      }
+    }
+
+    async function toggleExecutionMode() {
+      try {
+        const res = await fetch('/api/toggle-mode', { method: 'POST' });
+        const data = await res.json();
+        fetchStatus();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function populateNVRFilter() {
+      const select = document.getElementById('nvr-filter');
+      const datalist = document.getElementById('nvr-datalist');
+      const prevVal = select.value;
+      const currentNVRs = new Set(devicesData.map(d => d.nvr).filter(n => n && n !== 'N/A'));
+      
+      if (currentNVRs.size !== nvrSet.size) {
+        nvrSet = currentNVRs;
+        select.innerHTML = '<option value="">Todos os Gravadores</option>';
+        datalist.innerHTML = '';
+        Array.from(nvrSet).sort().forEach(nvr => {
+          const opt = document.createElement('option');
+          opt.value = nvr;
+          opt.innerText = nvr;
+          select.appendChild(opt);
+
+          const dlOpt = document.createElement('option');
+          dlOpt.value = nvr;
+          datalist.appendChild(dlOpt);
+        });
+        select.value = prevVal;
+      }
+    }
+
+    function setFilter(filterType) {
+      currentFilter = filterType;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('bg-indigo-600', 'text-white');
+        btn.classList.add('bg-slate-800', 'text-slate-300');
+      });
+      const activeBtn = document.getElementById(`filter-${filterType}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-slate-800', 'text-slate-300');
+        activeBtn.classList.add('bg-indigo-600', 'text-white');
+      }
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const searchTerm = document.getElementById('search-input').value.toLowerCase();
+      const nvrFilter = document.getElementById('nvr-filter').value;
+
+      const filtered = devicesData.filter(dev => {
+        if (currentFilter === 'offline' && dev.status !== 'OFFLINE') return false;
+        if (currentFilter === 'pending' && !dev.status.startsWith('PENDING')) return false;
+        if (nvrFilter && dev.nvr !== nvrFilter) return false;
+        if (searchTerm) {
+          const match = dev.name.toLowerCase().includes(searchTerm) ||
+                        dev.ip.toLowerCase().includes(searchTerm) ||
+                        (dev.nvr && dev.nvr.toLowerCase().includes(searchTerm)) ||
+                        (dev.channel && dev.channel.toString().includes(searchTerm));
+          if (!match) return false;
+        }
+        return true;
+      });
+
+      renderGrid(filtered);
+    }
+
+    let lastRenderedSnapTimes = {};
+
+    function renderGrid(devices) {
+      const grid = document.getElementById('camera-grid');
+      if (devices.length === 0) {
+        grid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-500">Nenhum dispositivo encontrado.</div>`;
+        return;
+      }
+
+      const existingCards = grid.querySelectorAll('.camera-card');
+      const filteredIds = devices.map(d => 'card-' + d.id);
+      const isStructureChanged = existingCards.length !== devices.length || 
+        Array.from(existingCards).some((c, i) => c.id !== filteredIds[i]);
+
+      if (isStructureChanged) {
+        grid.innerHTML = devices.map(dev => generateCardHTML(dev)).join('');
+      } else {
+        devices.forEach(dev => updateExistingCard(dev));
+      }
+    }
+
+    function generateCardHTML(dev) {
+      let statusBadge = '';
+      let borderClass = 'border-slate-800';
+      let bgClass = 'bg-slate-900/80';
+      let overlayBadge = '';
+      let imgFilter = '';
+
+      if (dev.status === 'ONLINE') {
+        statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800/60">ONLINE</span>';
+        borderClass = 'border-emerald-900/40 hover:border-emerald-700/60';
+        overlayBadge = `<span class="bg-emerald-950/80 backdrop-blur-sm border border-emerald-700/80 text-emerald-300 text-[9px] font-bold px-2 py-0.5 rounded shadow">ONLINE ● ${dev.latency_ms > 0 ? dev.latency_ms.toFixed(0) + 'ms' : ''}</span>`;
+      } else if (dev.status === 'OFFLINE') {
+        statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-950 text-rose-400 border border-rose-800/60 offline-pulse">OFFLINE</span>';
+        borderClass = 'border-rose-800/80 shadow-lg shadow-rose-950/50 bg-rose-950/20';
+        imgFilter = 'filter grayscale contrast-125 brightness-75';
+        overlayBadge = `<span class="bg-rose-950/90 backdrop-blur-sm border border-rose-600 text-rose-300 text-[9px] font-bold px-2 py-0.5 rounded shadow offline-pulse">OFFLINE (ÚLTIMO FRAME)</span>`;
+      } else {
+        statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-950 text-amber-400 border border-amber-800/60">INSTÁVEL</span>';
+        borderClass = 'border-amber-800/60';
+        overlayBadge = `<span class="bg-amber-950/80 backdrop-blur-sm border border-amber-700 text-amber-300 text-[9px] font-bold px-2 py-0.5 rounded shadow">INSTÁVEL</span>`;
+      }
+
+      const snapshotUrl = dev.snapshot_url ? `${dev.snapshot_url}?t=${Date.now()}` : '/snapshots/default.jpg';
+      lastRenderedSnapTimes[dev.id] = dev.snapshot_time;
+
+      return `
+        <div id="card-${dev.id}" class="camera-card rounded-2xl border ${borderClass} ${bgClass} flex flex-col justify-between overflow-hidden transition hover:-translate-y-1 duration-200 shadow-xl group">
+          
+          <div class="relative aspect-video bg-black/60 overflow-hidden cursor-pointer" onclick="openLightbox('${dev.id}')">
+            <img id="img-${dev.id}" src="${snapshotUrl}" alt="${dev.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300 ${imgFilter}" onerror="this.src='/snapshots/default.jpg'">
+            
+            <div id="overlay-${dev.id}" class="absolute top-2 left-2 flex items-center gap-1.5">
+              ${overlayBadge}
+            </div>
+
+            <div id="time-${dev.id}" class="absolute bottom-1 right-2 text-[9px] font-mono bg-black/60 backdrop-blur-xs px-1.5 py-0.5 rounded text-slate-300">
+              ${dev.snapshot_time || dev.last_seen}
+            </div>
+
+            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-3">
+              <span class="text-white text-xs bg-black/60 px-2.5 py-1.5 rounded-lg border border-slate-600 flex items-center gap-1.5 shadow">
+                <i class="fa-solid fa-expand"></i> Ampliar
+              </span>
+            </div>
+          </div>
+
+          <div class="p-3.5 flex flex-col justify-between flex-1">
+            <div>
+              <div class="flex items-start justify-between gap-1 mb-1.5">
+                <span class="font-bold text-xs text-slate-200 truncate" title="${dev.name}">${dev.name}</span>
+                <div id="badge-${dev.id}">${statusBadge}</div>
+              </div>
+
+              <div class="text-[11px] text-slate-400 space-y-1 font-mono">
+                <div class="flex justify-between">
+                  <span class="text-slate-500">IP:</span>
+                  <span class="text-slate-300 font-semibold">${dev.ip}:${dev.port || 554}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-500">NVR:</span>
+                  <span class="text-slate-300 truncate max-w-[120px]">${dev.nvr || 'N/A'} (CH ${dev.channel || '0'})</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+              <span id="fail-${dev.id}" class="font-mono text-[10px] text-slate-500">Falhas: ${dev.failures}</span>
+              <div class="flex items-center gap-1.5">
+                <button onclick="copyRtspUrl('${dev.id}', event)" title="Copiar Link RTSP" class="p-1.5 hover:bg-slate-800 rounded text-slate-400 hover:text-sky-400 transition">
+                  <i class="fa-solid fa-link"></i>
+                </button>
+                <button onclick="takeSnapshotNow('${dev.id}', event)" title="Capturar Foto Agora" class="p-1.5 hover:bg-slate-800 rounded text-slate-400 hover:text-emerald-400 transition">
+                  <i class="fa-solid fa-camera"></i>
+                </button>
+                <button onclick="editCameraById('${dev.id}')" title="Editar Configurações" class="p-1.5 hover:bg-slate-800 rounded text-slate-400 hover:text-indigo-400 transition">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button onclick="deleteCameraById('${dev.id}', event)" title="Excluir Câmera" class="p-1.5 hover:bg-slate-800 rounded text-slate-400 hover:text-rose-400 transition">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      `;
+    }
+
+    function updateExistingCard(dev) {
+      const card = document.getElementById('card-' + dev.id);
+      if (!card) return;
+
+      let statusBadge = '';
+      let overlayBadge = '';
+
+      if (dev.status === 'ONLINE') {
+        statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800/60">ONLINE</span>';
+        card.className = 'camera-card rounded-2xl border border-emerald-900/40 hover:border-emerald-700/60 bg-slate-900/80 flex flex-col justify-between overflow-hidden transition hover:-translate-y-1 duration-200 shadow-xl group';
+        overlayBadge = `<span class="bg-emerald-950/80 backdrop-blur-sm border border-emerald-700/80 text-emerald-300 text-[9px] font-bold px-2 py-0.5 rounded shadow">ONLINE ● ${dev.latency_ms > 0 ? dev.latency_ms.toFixed(0) + 'ms' : ''}</span>`;
+      } else if (dev.status === 'OFFLINE') {
+        statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-950 text-rose-400 border border-rose-800/60 offline-pulse">OFFLINE</span>';
+        card.className = 'camera-card rounded-2xl border border-rose-800/80 shadow-lg shadow-rose-950/50 bg-rose-950/20 flex flex-col justify-between overflow-hidden transition hover:-translate-y-1 duration-200 shadow-xl group';
+        overlayBadge = `<span class="bg-rose-950/90 backdrop-blur-sm border border-rose-600 text-rose-300 text-[9px] font-bold px-2 py-0.5 rounded shadow offline-pulse">OFFLINE (ÚLTIMO FRAME)</span>`;
+      } else {
+        statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-950 text-amber-400 border border-amber-800/60">INSTÁVEL</span>';
+        card.className = 'camera-card rounded-2xl border border-amber-800/60 bg-slate-900/80 flex flex-col justify-between overflow-hidden transition hover:-translate-y-1 duration-200 shadow-xl group';
+        overlayBadge = `<span class="bg-amber-950/80 backdrop-blur-sm border border-amber-700 text-amber-300 text-[9px] font-bold px-2 py-0.5 rounded shadow">INSTÁVEL</span>`;
+      }
+
+      const badgeEl = document.getElementById('badge-' + dev.id);
+      if (badgeEl) badgeEl.innerHTML = statusBadge;
+
+      const overlayEl = document.getElementById('overlay-' + dev.id);
+      if (overlayEl) overlayEl.innerHTML = overlayBadge;
+
+      const failEl = document.getElementById('fail-' + dev.id);
+      if (failEl) failEl.innerText = `Falhas: ${dev.failures}`;
+
+      const timeEl = document.getElementById('time-' + dev.id);
+      // Atualiza imagem do snapshot com a foto mais recente
+      const img = document.getElementById('img-' + dev.id);
+      if (img && dev.snapshot_url) {
+        img.src = `${dev.snapshot_url}?t=${Date.now()}`;
+      }
+    }
+
+    // ==================== SETTINGS MODAL LOGIC ====================
+
+    const DEFAULT_TPLS = {
+      camera_down: "🚨 *ALERTA CFTV: CÂMERA OFFLINE!*\n\n📸 *Câmera:* {camera_name}\n🌐 *IP:* {camera_ip}:{camera_port}\n📼 *Gravador:* {nvr_name} (Canal {channel})\n⚠️ *Status:* Desconectada ({failures} falhas)\n🕒 *Horário:* {timestamp}",
+      camera_recovered: "✅ *CFTV NORMALIZADO: CÂMERA ONLINE!*\n\n📸 *Câmera:* {camera_name}\n🌐 *IP:* {camera_ip}\n📼 *Gravador:* {nvr_name} (Canal {channel})\n🕒 *Horário:* {timestamp}",
+      nvr_down: "🚨 *ALERTA CRÍTICO: GRAVADOR OFFLINE!*\n\n📼 *Gravador:* {nvr_name}\n🌐 *IP:* {camera_ip}\n⚠️ *Status:* Gravador desconectou ({offline_count}/{total_channels} canais sem sinal)\n🕒 *Horário:* {timestamp}",
+      nvr_recovered: "✅ *CFTV NORMALIZADO: GRAVADOR ONLINE!*\n\n📼 *Gravador:* {nvr_name}\n🌐 *IP:* {camera_ip}\n📶 *Status:* Gravador e todos os {total_channels} canais restabelecidos com sucesso\n🕒 *Horário:* {timestamp}"
+    };
+
+    async function openSettingsModal() {
+      try {
+        const res = await fetch('/api/settings');
+        if (res.ok) {
+          const s = await res.json();
+          document.getElementById('set-check-interval').value = s.check_interval || 15;
+          document.getElementById('set-timeout').value = s.connection_timeout || 2.0;
+          document.getElementById('set-failure-threshold').value = s.failure_threshold || 3;
+          document.getElementById('set-recovery-threshold').value = s.recovery_threshold || 2;
+
+          // Telegram
+          const tg = s.telegram || {};
+          document.getElementById('set-tg-enabled').checked = !!tg.enabled;
+          document.getElementById('set-tg-token').value = tg.bot_token || '';
+          document.getElementById('set-tg-chatid').value = tg.chat_id || '';
+          document.getElementById('set-tg-snapshot').checked = tg.send_snapshot !== false;
+
+          // WhatsApp
+          const wa = s.whatsapp || {};
+          document.getElementById('set-wa-enabled').checked = !!wa.enabled;
+          document.getElementById('set-wa-provider').value = wa.provider || 'evolution';
+          document.getElementById('set-wa-url').value = wa.api_url || '';
+          document.getElementById('set-wa-instance').value = wa.instance_name || 'cftv';
+          document.getElementById('set-wa-key').value = wa.api_key || '';
+          document.getElementById('set-wa-target').value = wa.target_number || '';
+          document.getElementById('set-wa-snapshot').checked = wa.send_snapshot !== false;
+
+          // Templates de Mensagens
+          const tpls = s.templates || DEFAULT_TPLS;
+          document.getElementById('tpl-nvr-down').value = tpls.nvr_down || DEFAULT_TPLS.nvr_down;
+          document.getElementById('tpl-nvr-rec').value = tpls.nvr_recovered || DEFAULT_TPLS.nvr_recovered;
+          document.getElementById('tpl-cam-down').value = tpls.camera_down || DEFAULT_TPLS.camera_down;
+          document.getElementById('tpl-cam-rec').value = tpls.camera_recovered || DEFAULT_TPLS.camera_recovered;
+        }
+      } catch (e) {
+        console.error("Erro ao carregar configurações:", e);
+      }
+
+      document.getElementById('settings-modal').classList.remove('hidden');
+      switchSettingsTab('tab-set-general');
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settings-modal').classList.add('hidden');
+    }
+
+    function switchSettingsTab(tabId) {
+      document.querySelectorAll('.set-tab-btn').forEach(btn => {
+        btn.classList.remove('border-indigo-500', 'text-indigo-400');
+        btn.classList.add('border-transparent', 'text-slate-400');
+      });
+      const activeBtn = document.getElementById(`set-btn-${tabId.replace('tab-set-', '')}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('border-transparent', 'text-slate-400');
+        activeBtn.classList.add('border-indigo-500', 'text-indigo-400');
+      }
+
+      document.getElementById('tab-set-general').classList.add('hidden');
+      document.getElementById('tab-set-telegram').classList.add('hidden');
+      document.getElementById('tab-set-whatsapp').classList.add('hidden');
+      document.getElementById('tab-set-templates').classList.add('hidden');
+
+      document.getElementById(tabId).classList.remove('hidden');
+    }
+
+    function restoreDefaultTemplates() {
+      if (!confirm("Deseja restaurar os modelos de mensagens para o padrão?")) return;
+      document.getElementById('tpl-nvr-down').value = DEFAULT_TPLS.nvr_down;
+      document.getElementById('tpl-nvr-rec').value = DEFAULT_TPLS.nvr_recovered;
+      document.getElementById('tpl-cam-down').value = DEFAULT_TPLS.camera_down;
+      document.getElementById('tpl-cam-rec').value = DEFAULT_TPLS.camera_recovered;
+    }
+
+    async function saveSettings() {
+      const payload = {
+        check_interval: parseInt(document.getElementById('set-check-interval').value) || 15,
+        connection_timeout: parseFloat(document.getElementById('set-timeout').value) || 2.0,
+        failure_threshold: parseInt(document.getElementById('set-failure-threshold').value) || 3,
+        recovery_threshold: parseInt(document.getElementById('set-recovery-threshold').value) || 2,
+        telegram: {
+          enabled: document.getElementById('set-tg-enabled').checked,
+          bot_token: document.getElementById('set-tg-token').value.trim(),
+          chat_id: document.getElementById('set-tg-chatid').value.trim(),
+          send_snapshot: document.getElementById('set-tg-snapshot').checked
+        },
+        whatsapp: {
+          enabled: document.getElementById('set-wa-enabled').checked,
+          provider: document.getElementById('set-wa-provider').value,
+          api_url: document.getElementById('set-wa-url').value.trim(),
+          instance_name: document.getElementById('set-wa-instance').value.trim(),
+          api_key: document.getElementById('set-wa-key').value.trim(),
+          target_number: document.getElementById('set-wa-target').value.trim(),
+          send_snapshot: document.getElementById('set-wa-snapshot').checked
+        },
+        templates: {
+          nvr_down: document.getElementById('tpl-nvr-down').value,
+          nvr_recovered: document.getElementById('tpl-nvr-rec').value,
+          camera_down: document.getElementById('tpl-cam-down').value,
+          camera_recovered: document.getElementById('tpl-cam-rec').value
+        }
+      };
+
+      try {
+        const res = await fetch('/api/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          alert('Configurações e Modelos de Mensagem salvos com sucesso!');
+          closeSettingsModal();
+          fetchStatus();
+        } else {
+          alert('Erro ao salvar configurações');
+        }
+      } catch (e) {
+        alert('Erro de conexão ao salvar configurações.');
+      }
+    }
+
+    async function testNotificationChannel(channel) {
+      // Salva antes de testar
+      await saveSettings();
+      
+      const feedbackEl = document.getElementById(`${channel === 'telegram' ? 'tg' : 'wa'}-test-feedback`);
+      feedbackEl.innerHTML = '<span class="text-amber-400"><i class="fa-solid fa-spinner fa-spin"></i> Enviando mensagem de teste...</span>';
+
+      try {
+        const res = await fetch('/api/test-notification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ channel })
+        });
+        const data = await res.json();
+        if (data.success) {
+          feedbackEl.innerHTML = '<span class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check"></i> ' + data.message + '</span>';
+        } else {
+          feedbackEl.innerHTML = '<span class="text-rose-400 font-bold"><i class="fa-solid fa-circle-xmark"></i> ' + data.message + '</span>';
+        }
+      } catch (e) {
+        feedbackEl.innerHTML = '<span class="text-rose-400 font-bold">Erro ao chamar API de teste</span>';
+      }
+    }
+
+    function copyRtspUrl(camId, event) {
+      if (event) event.stopPropagation();
+      const dev = devicesData.find(d => d.id === camId);
+      if (!dev || !dev.rtsp_url) {
+        alert("Link RTSP não disponível para esta câmera.");
+        return;
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(dev.rtsp_url).then(() => {
+          alert(`Link RTSP copiado com sucesso!\n\n${dev.rtsp_url}\n\nCole no VLC (Mídia -> Abrir Fluxo de Rede) ou no seu reprodutor.`);
+        }).catch(() => {
+          prompt("Copie o link RTSP abaixo:", dev.rtsp_url);
+        });
+      } else {
+        prompt("Copie o link RTSP abaixo:", dev.rtsp_url);
+      }
+    }
+
+    // ==================== LIGHTBOX LOGIC ====================
+
+    function openLightbox(camId) {
+      const dev = devicesData.find(d => d.id === camId);
+      if (!dev) return;
+      currentActiveCamId = camId;
+
+      document.getElementById('lightbox-cam-name').innerText = dev.name;
+      document.getElementById('lightbox-img').src = `${dev.snapshot_url}?t=${Date.now()}`;
+      document.getElementById('lightbox-cam-info').innerText = `IP: ${dev.ip}:${dev.port} | ${dev.nvr} CH ${dev.channel}`;
+      document.getElementById('lightbox-cam-time').innerText = `Último Frame Salvo: ${dev.snapshot_time || dev.last_seen}`;
+      
+      const badge = document.getElementById('lightbox-badge');
+      if (dev.status === 'ONLINE') {
+        badge.innerHTML = `<span class="text-emerald-400 font-bold">● ONLINE (${dev.latency_ms.toFixed(1)}ms)</span>`;
+      } else {
+        badge.innerHTML = `<span class="text-rose-400 font-bold">● OFFLINE - ÚLTIMO REGISTRO ANTES DA QUEDA</span>`;
+      }
+
+      document.getElementById('lightbox-modal').classList.remove('hidden');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox-modal').classList.add('hidden');
+      currentActiveCamId = null;
+    }
+
+    async function refreshLightboxSnapshot() {
+      if (!currentActiveCamId) return;
+      const icon = document.getElementById('lightbox-refresh-icon');
+      icon.classList.add('fa-spin');
+      try {
+        await fetch(`/api/cameras/${currentActiveCamId}/snapshot`, { method: 'POST' });
+        await fetchStatus();
+        const dev = devicesData.find(d => d.id === currentActiveCamId);
+        if (dev) {
+          document.getElementById('lightbox-img').src = `${dev.snapshot_url}?t=${Date.now()}`;
+          document.getElementById('lightbox-cam-time').innerText = `Último Frame Salvo: ${dev.snapshot_time}`;
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setTimeout(() => icon.classList.remove('fa-spin'), 600);
+      }
+    }
+
+    async function takeSnapshotNow(camId, event) {
+      if (event) event.stopPropagation();
+      try {
+        await fetch(`/api/cameras/${camId}/snapshot`, { method: 'POST' });
+        await fetchStatus();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // ==================== CRUD MODAL LOGIC ====================
+
+    function openCrudModal(initialTab = 'manage') {
+      document.getElementById('crud-modal').classList.remove('hidden');
+      if (initialTab === 'create') {
+        openNewCameraTab();
+      } else {
+        switchTab('tab-manage');
+        renderCrudTable();
+      }
+    }
+
+    function closeCrudModal() {
+      document.getElementById('crud-modal').classList.add('hidden');
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.crud-tab-btn').forEach(btn => {
+        btn.classList.remove('border-indigo-500', 'text-indigo-400');
+        btn.classList.add('border-transparent', 'text-slate-400');
+      });
+      const activeBtn = document.getElementById(`tab-btn-${tabId.replace('tab-', '')}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('border-transparent', 'text-slate-400');
+        activeBtn.classList.add('border-indigo-500', 'text-indigo-400');
+      }
+
+      document.getElementById('tab-manage').classList.add('hidden');
+      document.getElementById('tab-form').classList.add('hidden');
+      document.getElementById('tab-bulk').classList.add('hidden');
+
+      document.getElementById(tabId).classList.remove('hidden');
+      if (tabId === 'tab-manage') renderCrudTable();
+    }
+
+    function openNewCameraTab() {
+      document.getElementById('form-cam-id').value = '';
+      document.getElementById('form-name').value = '';
+      document.getElementById('form-ip').value = '';
+      document.getElementById('form-port').value = 554;
+      document.getElementById('form-http-port').value = 80;
+      document.getElementById('form-nvr').value = 'NVD-01';
+      document.getElementById('form-channel').value = 1;
+      document.getElementById('form-username').value = 'admin';
+      document.getElementById('form-password').value = '';
+      document.getElementById('form-snapshot-url').value = '';
+
+      document.getElementById('form-delete-btn').classList.add('hidden');
+      document.getElementById('form-tab-label').innerText = 'Cadastrar Nova Câmera';
+      document.getElementById('form-tab-icon').className = 'fa-solid fa-plus';
+      document.getElementById('form-submit-btn-text').innerText = 'Salvar Câmera';
+      switchTab('tab-form');
+    }
+
+    function editCameraById(camId) {
+      const cam = devicesData.find(d => d.id === camId);
+      if (!cam) return;
+
+      document.getElementById('form-cam-id').value = cam.id;
+      document.getElementById('form-name').value = cam.name;
+      document.getElementById('form-ip').value = cam.ip;
+      document.getElementById('form-port').value = cam.port || 554;
+      document.getElementById('form-http-port').value = cam.http_port || 80;
+      document.getElementById('form-nvr').value = cam.nvr || '';
+      document.getElementById('form-channel').value = cam.channel || 1;
+      document.getElementById('form-username').value = cam.username || 'admin';
+      document.getElementById('form-password').value = '';
+      document.getElementById('form-snapshot-url').value = cam.snapshot_url || '';
+
+      document.getElementById('form-delete-btn').classList.remove('hidden');
+      document.getElementById('form-tab-label').innerText = 'Editar Câmera';
+      document.getElementById('form-tab-icon').className = 'fa-solid fa-pen-to-square';
+      document.getElementById('form-submit-btn-text').innerText = 'Atualizar Câmera';
+
+      openCrudModal('form');
+      switchTab('tab-form');
+    }
+
+    async function deleteCurrentFormCamera() {
+      const camId = document.getElementById('form-cam-id').value;
+      if (!camId) return;
+      await deleteCameraById(camId);
+      switchTab('tab-manage');
+    }
+
+    function renderCrudTable() {
+      const search = (document.getElementById('crud-table-search')?.value || '').toLowerCase();
+      const tbody = document.getElementById('crud-table-body');
+      if (!tbody) return;
+      
+      const filtered = devicesData.filter(d => 
+        d.name.toLowerCase().includes(search) || 
+        d.ip.toLowerCase().includes(search) || 
+        (d.nvr && d.nvr.toLowerCase().includes(search))
+      );
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-500">Nenhum dispositivo encontrado.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(dev => `
+        <tr class="hover:bg-slate-800/40 transition">
+          <td class="p-3 w-16">
+            <img src="${dev.snapshot_url || ''}?t=${Date.now()}" class="w-12 h-7 object-cover rounded border border-slate-700 bg-black" onerror="this.src='/static/placeholder.jpg'">
+          </td>
+          <td class="p-3 font-semibold text-slate-200">${dev.name}</td>
+          <td class="p-3 font-mono text-slate-400">${dev.ip}:${dev.port || 554}</td>
+          <td class="p-3 text-slate-400">${dev.nvr || 'N/A'}</td>
+          <td class="p-3 text-slate-400 font-mono">CH ${dev.channel || '0'}</td>
+          <td class="p-3 text-right space-x-2">
+            <button onclick="editCameraById('${dev.id}')" class="p-1.5 text-indigo-400 hover:text-indigo-300 hover:bg-slate-800 rounded transition" title="Editar">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button onclick="deleteCameraById('${dev.id}', event)" class="p-1.5 text-rose-400 hover:text-rose-300 hover:bg-slate-800 rounded transition" title="Excluir">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function deleteCameraById(camId, event) {
+      if (event) event.stopPropagation();
+      const dev = devicesData.find(d => d.id === camId);
+      const camName = dev ? dev.name : 'esta câmera';
+
+      if (!confirm(`Deseja realmente remover "${camName}" do monitoramento?`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/cameras/${encodeURIComponent(camId)}`, {
+          method: 'DELETE'
+        });
+
+        if (res.ok) {
+          devicesData = devicesData.filter(d => d.id !== camId);
+          applyFilters();
+          renderCrudTable();
+          document.getElementById('tab-count').innerText = devicesData.length;
+          document.getElementById('stat-total').innerText = devicesData.length;
+          await fetchStatus();
+        } else {
+          const err = await res.json();
+          alert('Erro ao excluir: ' + (err.detail || 'Falha na requisição'));
+        }
+      } catch (e) {
+        console.error(e);
+        alert('Erro de conexão ao tentar excluir câmera.');
+      }
+    }
+
+    async function submitCameraForm() {
+      const id = document.getElementById('form-cam-id').value;
+      const name = document.getElementById('form-name').value.trim();
+      const ip = document.getElementById('form-ip').value.trim();
+      const port = parseInt(document.getElementById('form-port').value) || 554;
+      const http_port = parseInt(document.getElementById('form-http-port').value) || 80;
+      const nvr = document.getElementById('form-nvr').value.trim() || 'N/A';
+      const channel = parseInt(document.getElementById('form-channel').value) || 1;
+      const username = document.getElementById('form-username').value.trim() || 'admin';
+      const password = document.getElementById('form-password').value;
+      const snapshot_url = document.getElementById('form-snapshot-url').value.trim();
+
+      if (!name || !ip) {
+        alert('Por favor, preencha o Nome e o IP da câmera.');
+        return;
+      }
+
+      const payload = { name, ip, port, http_port, nvr, channel, username, password, snapshot_url };
+      try {
+        let res;
+        if (id) {
+          res = await fetch(`/api/cameras/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        } else {
+          res = await fetch('/api/cameras', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        }
+
+        if (!res.ok) {
+          const err = await res.json();
+          alert('Erro ao salvar: ' + (err.detail || 'Falha na requisição'));
+          return;
+        }
+
+        await fetchStatus();
+        switchTab('tab-manage');
+      } catch (e) {
+        alert('Erro de conexão ao salvar câmera.');
+      }
+    }
+
+    let currentBulkMode = 'dvr';
+
+    function setBulkMode(mode) {
+      currentBulkMode = mode;
+      const btnDvr = document.getElementById('bulk-mode-btn-dvr');
+      const btnIp = document.getElementById('bulk-mode-btn-ip');
+      const secDvr = document.getElementById('bulk-section-dvr');
+      const secIp = document.getElementById('bulk-section-ip');
+      const btnSubmitText = document.getElementById('bulk-submit-btn-text');
+
+      if (mode === 'dvr') {
+        btnDvr.className = 'py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 bg-indigo-600 text-white shadow';
+        btnIp.className = 'py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200';
+        secDvr.classList.remove('hidden');
+        secIp.classList.add('hidden');
+        btnSubmitText.innerText = 'Gerar Canais do Gravador';
+      } else {
+        btnIp.className = 'py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 bg-indigo-600 text-white shadow';
+        btnDvr.className = 'py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200';
+        secIp.classList.remove('hidden');
+        secDvr.classList.add('hidden');
+        btnSubmitText.innerText = 'Gerar Faixa de IPs Sequenciais';
+      }
+    }
+
+    function setChannelRange(start, end) {
+      document.getElementById('bulk-ch-start').value = start;
+      document.getElementById('bulk-ch-end').value = end;
+    }
+
+    async function submitBulkGenerate() {
+      let payload = { mode: currentBulkMode };
+
+      if (currentBulkMode === 'dvr') {
+        const dvr_name = document.getElementById('bulk-dvr-name').value.trim();
+        const dvr_ip = document.getElementById('bulk-dvr-ip').value.trim();
+        const channel_start = parseInt(document.getElementById('bulk-ch-start').value) || 1;
+        const channel_end = parseInt(document.getElementById('bulk-ch-end').value) || 16;
+        const port = parseInt(document.getElementById('bulk-dvr-port').value) || 37777;
+        const http_port = parseInt(document.getElementById('bulk-dvr-http-port').value) || 80;
+        const username = document.getElementById('bulk-dvr-user').value.trim() || 'admin';
+        const password = document.getElementById('bulk-dvr-pass').value;
+
+        if (!dvr_name || !dvr_ip) {
+          alert('Por favor, informe o Nome e o IP do Gravador.');
+          return;
+        }
+
+        if (channel_end < channel_start) {
+          alert('O canal final não pode ser menor que o canal inicial.');
+          return;
+        }
+
+        payload = {
+          mode: 'dvr_channels',
+          dvr_name,
+          dvr_ip,
+          channel_start,
+          channel_end,
+          port,
+          http_port,
+          username,
+          password
+        };
+
+      } else {
+        const prefix_name = document.getElementById('bulk-name').value.trim();
+        const ip_start = document.getElementById('bulk-ip').value.trim();
+        const count = parseInt(document.getElementById('bulk-count').value) || 10;
+        const port = parseInt(document.getElementById('bulk-port').value) || 554;
+        const http_port = parseInt(document.getElementById('bulk-http-port').value) || 80;
+        const nvr = document.getElementById('bulk-nvr').value.trim() || 'NVD-01';
+        const username = document.getElementById('bulk-user').value.trim() || 'admin';
+        const password = document.getElementById('bulk-pass').value;
+
+        if (!prefix_name || !ip_start || count < 1) {
+          alert('Preencha os campos corretamente.');
+          return;
+        }
+
+        payload = {
+          mode: 'ip_range',
+          prefix_name,
+          ip_start,
+          count,
+          port,
+          http_port,
+          nvr,
+          username,
+          password
+        };
+      }
+
+      try {
+        const res = await fetch('/api/cameras/bulk-generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const result = await res.json();
+          alert(result.message || 'Câmeras cadastradas com sucesso!');
+          await fetchStatus();
+          switchTab('tab-manage');
+        } else {
+          const err = await res.json();
+          alert('Erro: ' + (err.detail || 'Falha ao gerar em lote'));
+        }
+      } catch (e) {
+        alert('Erro de conexão ao gerar em lote.');
+      }
+    }
+
+    async function triggerScan() {
+      const icon = document.getElementById('scan-icon');
+      icon.classList.add('fa-spin');
+      try {
+        await fetch('/api/scan-now', { method: 'POST' });
+        await fetchStatus();
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setTimeout(() => icon.classList.remove('fa-spin'), 600);
+      }
+    }
+
+    function setupSSE() {
+      const eventSource = new EventSource('/api/events');
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'STATUS_UPDATE') {
+          fetchStatus();
+        } else if (data.type === 'ALERT') {
+          addEventLog(data.payload);
+        }
+      };
+      eventSource.onerror = () => {
+        setTimeout(setupSSE, 3000);
+      };
+    }
+
+    function addEventLog(payload) {
+      const container = document.getElementById('event-logs');
+      const isRecovered = payload.status === 'ONLINE';
+      const color = isRecovered ? 'text-emerald-400 border-emerald-800/40 bg-emerald-950/20' : 'text-rose-400 border-rose-800/40 bg-rose-950/20';
+      const icon = isRecovered ? 'fa-circle-check' : 'fa-triangle-exclamation';
+
+      const entryHtml = `
+        <div class="p-2.5 rounded-lg border ${color} flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid ${icon}"></i>
+            <span><strong>${payload.name}</strong> (${payload.ip}) ${isRecovered ? 'restabelecida' : 'ficou OFFLINE'}</span>
+          </div>
+          <span class="text-slate-500 font-mono text-[10px]">${payload.timestamp}</span>
+        </div>
+      `;
+
+      if (container.children.length === 1 && container.children[0].classList.contains('italic')) {
+        container.innerHTML = '';
+      }
+      container.insertAdjacentHTML('afterbegin', entryHtml);
+    }
+
+    function clearEventLogs() {
+      document.getElementById('event-logs').innerHTML = '<div class="text-slate-500 italic">Histórico limpo.</div>';
+    }
+
+    fetchStatus();
+    setupSSE();
+    setInterval(fetchStatus, 5000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{
+  "server_port": 8001,
+  "check_interval": 45,
+  "connection_timeout": 3.5,
+  "failure_threshold": 2,
+  "recovery_threshold": 1,
+  "max_concurrent_checks": 8,
+  "cameras_file": "C:\\Users\\MONITORAMNETO\\.gemini\\antigravity\\scratch\\cftv-monitor-v2\\cameras.json",
+  "clients_file": "C:\\Users\\MONITORAMNETO\\.gemini\\antigravity\\scratch\\cftv-monitor-v2\\clients.json",
+  "log_file": "C:\\Users\\MONITORAMNETO\\.gemini\\antigravity\\scratch\\cftv-monitor-v2\\cftv_monitor.log",
+  "telegram": {
+    "enabled": false,
+    "bot_token": "8766208201:AAGhCGn5dJTH-ZV5zo1hBS6EJJeXQpFwCUs",
+    "chat_id": "1649051973",
+    "send_snapshot": true
+  },
+  "whatsapp": {
+    "enabled": true,
+    "provider": "evolution",
+    "api_url": "http://localhost:8080",
+    "api_key": "",
+    "instance_name": "cftv",
+    "target_number": "",
+    "send_snapshot": true
+  },
+  "templates": {
+    "camera_down": "🚨 *HELPSEG INFORMA: CÂMERA OFFLINE!*\n\n📸 *Câmera:* {camera_name}\n🌐 *IP:* {camera_ip}:{camera_port}\n📼 *Gravador:* {nvr_name} (Canal {channel})\n⚠️ *Status:* Desconectada ({failures} falhas)\n🕒 *Horário:* {timestamp}",
+    "camera_recovered": "✅ *HELPSEG INFORMA: CÂMERA ONLINE!*\n\n📸 *Câmera:* {camera_name}\n🌐 *IP:* {camera_ip}\n📼 *Gravador:* {nvr_name} (Canal {channel})\n🕒 *Horário:* {timestamp}",
+    "nvr_down": "🚨 *ALERTA CRÍTICO: GRAVADOR OFFLINE!*\n\n📼 *Gravador:* {nvr_name}\n🌐 *IP:* {camera_ip}\n⚠️ *Status:* Gravador desconectou ({offline_count}/{total_channels} canais sem sinal)\n🕒 *Horário:* {timestamp}",
+    "nvr_recovered": "✅ *HELPSEG INFORMA: GRAVADOR ONLINE!*\n\n📼 *Gravador:* {nvr_name}\n🌐 *IP:* {camera_ip}\n📶 *Status:* Gravador e todos os {total_channels} canais restabelecidos com sucesso\n🕒 *Horário:* {timestamp}",
+    "noc_camera_down": "🚨 *[NOC INTERNO] ALERTA: CÂMERA OFFLINE!*\n\n🏢 *Cliente:* {client_name}\n📸 *Câmera:* {camera_name}\n🌐 *IP:* {camera_ip}:{camera_port}\n📼 *Gravador:* {nvr_name} (Canal {channel})\n⚠️ *Status:* Desconectada ({failures} falhas)\n🕒 *Horário:* {timestamp}",
+    "noc_camera_recovered": "✅ *[NOC INTERNO] CÂMERA ONLINE!*\n\n🏢 *Cliente:* {client_name}\n📸 *Câmera:* {camera_name}\n🌐 *IP:* {camera_ip}\n📼 *Gravador:* {nvr_name} (Canal {channel})\n🕒 *Horário:* {timestamp}",
+    "noc_nvr_down": "🚨 *[NOC INTERNO] ALERTA CRÍTICO: GRAVADOR OFFLINE!*\n\n🏢 *Cliente:* {client_name}\n📼 *Gravador:* {nvr_name}\n🌐 *IP:* {camera_ip}\n⚠️ *Status:* Gravador desconectou ({offline_count}/{total_channels} canais sem sinal)\n🕒 *Horário:* {timestamp}",
+    "noc_nvr_recovered": "✅ *[NOC INTERNO] GRAVADOR RESTABELECIDO!*\n\n🏢 *Cliente:* {client_name}\n📼 *Gravador:* {nvr_name}\n🌐 *IP:* {camera_ip}\n📶 *Status:* Gravador e todos os {total_channels} canais restabelecidos\n🕒 *Horário:* {timestamp}",
+    "client_camera_down": "Olá, {contact_name}! 👋\n\nIdentificamos uma oscilação no seu sistema de CFTV:\n🏢 *Unidade:* {client_name}\n📸 *Dispositivo:* {camera_name}\n🕒 *Horário:* {timestamp}\n\nNossa central de monitoramento já está acompanhando para normalização rápida. 🛡️",
+    "client_camera_recovered": "Olá, {contact_name}! 👋\n\nInformamos que a conexão com a câmera *{camera_name}* do *{client_name}* foi *totalmente restabelecida* e está operando normalmente. ✅",
+    "client_nvr_down": "Olá, {contact_name}! 👋\n\n🚨 *Aviso de Oscilação de Conexão:*\nIdentificamos que o gravador de vídeo *{nvr_name}* da sua empresa (*{client_name}*) perdeu conexão com a internet ou energia.\n🕒 *Horário:* {timestamp}\n\nNossa equipe técnica já está em alerta e monitorando o restabelecimento do sinal. 🛡️",
+    "client_nvr_recovered": "Olá, {contact_name}! 👋\n\n✅ *Sistema de Segurança Normalizado!*\nO gravador de vídeo *{nvr_name}* do *{client_name}* retornou e todas as suas câmeras já estão gravando normalmente."
+  }
+}

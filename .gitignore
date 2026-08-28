@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+*.env
+
+# Node.js & NPM
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# WhatsApp Gateway Local Session (CRÍTICO: Nunca enviar credenciais/sessão)
+.wwebjs_auth/
+.wwebjs_cache/
+*.session
+
+# Snapshots de câmeras
+snapshots/cam-*.jpg
+snapshots/nvr-*.jpg
+snapshots/test_*.jpg
+snapshots/*.tmp
+snapshots/*.tmp.jpg
+cftv-monitor/snapshots/cam-*.jpg
+cftv-monitor/snapshots/nvr-*.jpg
+cftv-monitor-v2/snapshots/cam-*.jpg
+cftv-monitor-v2/snapshots/nvr-*.jpg
+**/snapshots/cam-*.jpg
+**/snapshots/nvr-*.jpg
+**/snapshots/test_*.jpg
+**/snapshots/*.tmp
+
+# Logs & Temporários
+*.log
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
