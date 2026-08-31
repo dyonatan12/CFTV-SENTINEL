@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+  # Futuramente podemos adicionar um endpoint de métricas no nosso cftv-monitor e adicioná-lo aqui
+  # - job_name: 'cftv-monitor'
+  #   static_configs:
+  #     - targets: ['cftv-monitor:8001']
