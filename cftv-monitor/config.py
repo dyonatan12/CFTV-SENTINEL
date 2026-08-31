@@ -1,7 +1,8 @@
 import os
 import json
 
-SETTINGS_FILE = os.path.join(os.path.dirname(__file__), "settings.json")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+SETTINGS_FILE = os.path.join(BASE_DIR, "settings.json")
 
 DEFAULT_TEMPLATES = {
     "camera_down": "🚨 *ALERTA CFTV: CÂMERA OFFLINE!*\n\n📸 *Câmera:* {camera_name}\n🌐 *IP:* {camera_ip}:{camera_port}\n📼 *Gravador:* {nvr_name} (Canal {channel})\n⚠️ *Status:* Desconectada ({failures} falhas)\n🕒 *Horário:* {timestamp}",
@@ -20,8 +21,8 @@ DEFAULT_SETTINGS = {
     "failure_threshold": 3,
     "recovery_threshold": 2,
     "max_concurrent_checks": 8,
-    "cameras_file": os.path.join(os.path.dirname(__file__), "cameras.json"),
-    "log_file": os.path.join(os.path.dirname(__file__), "cftv_monitor.log"),
+    "cameras_file": os.path.join(BASE_DIR, "cameras.json"),
+    "log_file": os.path.join(BASE_DIR, "cftv_monitor.log"),
     "telegram": {
         "enabled": False,
         "bot_token": "",
@@ -45,13 +46,19 @@ class SystemSettings:
         self.data = dict(DEFAULT_SETTINGS)
         self.load()
 
+    def _resolve_path(self, val: str, default_filename: str) -> str:
+        if not val or not isinstance(val, str):
+            return os.path.join(BASE_DIR, default_filename)
+        if os.path.isabs(val) and os.path.exists(os.path.dirname(val)):
+            return val
+        return os.path.join(BASE_DIR, os.path.basename(val))
+
     def load(self):
         if os.path.exists(SETTINGS_FILE):
             try:
                 with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
                     saved = json.load(f)
                     self.data.update(saved)
-                    # Garante que templates contenha todas as chaves
                     if "templates" not in self.data or not isinstance(self.data["templates"], dict):
                         self.data["templates"] = dict(DEFAULT_TEMPLATES)
                     else:
@@ -80,11 +87,11 @@ class SystemSettings:
 
     @property
     def check_interval(self) -> int:
-        return int(self.data.get("check_interval", 15))
+        return int(self.data.get("check_interval", 45))
 
     @property
     def connection_timeout(self) -> float:
-        return float(self.data.get("connection_timeout", 2.0))
+        return float(self.data.get("connection_timeout", 3.5))
 
     @property
     def failure_threshold(self) -> int:
@@ -96,15 +103,17 @@ class SystemSettings:
 
     @property
     def max_concurrent_checks(self) -> int:
-        return int(self.data.get("max_concurrent_checks", 50))
+        return int(self.data.get("max_concurrent_checks", 8))
 
     @property
     def cameras_file(self) -> str:
-        return self.data.get("cameras_file", os.path.join(os.path.dirname(__file__), "cameras.json"))
+        raw = self.data.get("cameras_file", "cameras.json")
+        return self._resolve_path(raw, "cameras.json")
 
     @property
     def log_file(self) -> str:
-        return self.data.get("log_file", os.path.join(os.path.dirname(__file__), "cftv_monitor.log"))
+        raw = self.data.get("log_file", "cftv_monitor.log")
+        return self._resolve_path(raw, "cftv_monitor.log")
 
     @property
     def telegram(self) -> dict:

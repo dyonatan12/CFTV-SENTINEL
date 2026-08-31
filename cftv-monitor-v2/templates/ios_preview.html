@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>HelpSeg - Experiência Apple iOS | Help Segurança</title>
+  
+  <!-- Tailwind CSS & FontAwesome -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            ios: {
+              bg: '#000000',
+              card: 'rgba(255, 255, 255, 0.06)',
+              cardHover: 'rgba(255, 255, 255, 0.10)',
+              border: 'rgba(255, 255, 255, 0.10)',
+              blue: '#0071e3',
+              blueLight: '#2997ff',
+              green: '#30d158',
+              amber: '#ff9f0a',
+              red: '#ff453a',
+              textMuted: '#86868b'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Tipografia e Sensação Tátil Apple */
+    body {
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+      letter-spacing: -0.02em;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .ios-glass {
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      background: rgba(20, 20, 22, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .ios-glass-pill {
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      background: rgba(30, 30, 32, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+    .ios-card {
+      transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .ios-card:active {
+      transform: scale(0.97);
+    }
+    .dynamic-island {
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    /* Estilo de iPhone Frame opcional */
+    .iphone-frame {
+      max-width: 410px;
+      margin: 0 auto;
+      border-radius: 54px;
+      box-shadow: 0 0 0 12px #1c1c1e, 0 25px 60px -15px rgba(0, 0, 0, 0.8);
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body class="bg-[#050507] text-white min-h-screen flex flex-col font-sans antialiased selection:bg-ios-blueLight selection:text-black">
+
+  <!-- ==================== BARRA SUPERIOR / CONTROLE DE VISUALIZAÇÃO ==================== -->
+  <div class="bg-black/60 border-b border-white/10 px-4 py-2.5 flex items-center justify-between text-xs">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-ios-blueLight"></span>
+      <span class="font-semibold text-zinc-300">HelpSeg • Conceito de Design Apple iOS</span>
+    </div>
+    
+    <div class="flex items-center gap-3">
+      <button onclick="toggleFrameMode()" id="btn-frame-toggle" class="bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full text-[11px] font-medium text-white transition">
+        <i class="fa-solid fa-mobile-screen mr-1"></i> <span id="frame-toggle-text">Ver no Formato iPhone</span>
+      </button>
+      <a href="/" class="text-zinc-400 hover:text-white transition text-xs">Voltar ao Painel</a>
+    </div>
+  </div>
+
+  <!-- CONTAINER PRINCIPAL DO APP -->
+  <div id="app-wrapper" class="flex-1 flex flex-col w-full py-6 transition-all duration-500">
+    <div id="iphone-container" class="w-full max-w-md mx-auto flex-1 flex flex-col bg-black min-h-[860px] relative pb-24 border border-white/10 rounded-[44px] overflow-hidden shadow-2xl">
+      
+      <!-- ==================== ILHA DINÂMICA (APPLE DYNAMIC ISLAND) ==================== -->
+      <div class="pt-3 px-6 flex justify-center sticky top-0 z-50">
+        <div id="dynamic-island" onclick="toggleIslandExpand()" class="dynamic-island bg-black border border-white/15 rounded-full px-4 py-2.5 flex items-center justify-between gap-3 shadow-2xl cursor-pointer hover:border-white/30 w-auto min-w-[210px]">
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-ios-green animate-pulse"></div>
+            <span class="text-xs font-semibold text-white tracking-tight">Help<span class="text-ios-blueLight">Seg</span></span>
+          </div>
+          
+          <div class="flex items-center gap-2 text-[11px] text-zinc-400 font-medium">
+            <span id="island-cam-status">16 Câmeras</span>
+            <i class="fa-solid fa-lock text-[10px] text-ios-green"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAINEL EXPANDIDO DA ILHA DINÂMICA (DROPDOWN SUAVE) -->
+      <div id="island-expanded" class="hidden px-5 pt-2 pb-4 transition-all duration-300">
+        <div class="ios-glass p-3.5 rounded-2xl space-y-2.5 text-xs">
+          <div class="flex justify-between items-center text-[11px] text-zinc-400">
+            <span>Central Help Segurança</span>
+            <span class="text-ios-green font-mono">Uptime 99.98%</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="bg-white/5 p-2 rounded-xl border border-white/5">
+              <span class="text-[10px] text-zinc-400 block">Status</span>
+              <span class="text-xs font-bold text-ios-green">Protegido</span>
+            </div>
+            <div class="bg-white/5 p-2 rounded-xl border border-white/5">
+              <span class="text-[10px] text-zinc-400 block">Gravação</span>
+              <span class="text-xs font-bold text-white">HD Local</span>
+            </div>
+            <div class="bg-white/5 p-2 rounded-xl border border-white/5">
+              <span class="text-[10px] text-zinc-400 block">Latência</span>
+              <span class="text-xs font-bold text-ios-blueLight font-mono">14ms</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== HEADER DO AMBIENTE / LOCAL ==================== -->
+      <div class="px-6 pt-4 pb-2 flex items-end justify-between">
+        <div>
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-ios-blueLight">Help Segurança</span>
+          <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+            Minhas Câmeras
+          </h1>
+        </div>
+
+        <!-- Seletor de Local Estilo iOS Capsule -->
+        <div class="relative">
+          <select id="ios-site-select" onchange="onIosSiteChange()" class="bg-white/10 border border-white/15 text-white text-xs font-medium rounded-full px-3.5 py-1.5 focus:outline-none focus:border-ios-blueLight cursor-pointer">
+            <option value="all" class="bg-zinc-900 text-white">🏢 Todos os Locais</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ==================== CAMERA HERO CINEMA (MODO DESTAQUE APPLE) ==================== -->
+      <div class="px-5 pt-3 space-y-2">
+        <div class="relative aspect-video bg-zinc-950 rounded-[28px] overflow-hidden border border-white/15 shadow-2xl group">
+          <img id="ios-hero-img" src="/snapshots/default.jpg" class="w-full h-full object-cover">
+          
+          <!-- Badges de Vidro Flutuantes -->
+          <div class="absolute top-3.5 left-3.5 flex items-center gap-2">
+            <span class="ios-glass-pill px-3 py-1 rounded-full text-[10px] font-semibold text-white flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+              AO VIVO
+            </span>
+            <span id="ios-hero-title" class="ios-glass-pill px-3 py-1 rounded-full text-[10px] font-semibold text-ios-blueLight">
+              Portaria Principal
+            </span>
+          </div>
+
+          <!-- Dock de Ações Flutuante no Vídeo (iOS Style) -->
+          <div class="absolute bottom-3.5 left-1/2 -translate-x-1/2 ios-glass-pill px-4 py-1.5 rounded-full flex items-center gap-4 shadow-xl">
+            <button onclick="triggerHapticFeedback('Snapshot salvo!')" class="text-white hover:text-ios-blueLight text-xs p-1" title="Foto">
+              <i class="fa-solid fa-camera"></i>
+            </button>
+            <div class="w-px h-3.5 bg-white/20"></div>
+            <button onclick="toggleIosAudio()" id="ios-audio-btn" class="text-white hover:text-ios-blueLight text-xs p-1" title="Áudio">
+              <i class="fa-solid fa-volume-high"></i>
+            </button>
+            <div class="w-px h-3.5 bg-white/20"></div>
+            <button onclick="scrollSection('playback')" class="text-white hover:text-ios-blueLight text-xs p-1" title="Linha do Tempo">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+            </button>
+            <div class="w-px h-3.5 bg-white/20"></div>
+            <button onclick="fullscreenIos()" class="text-white hover:text-ios-blueLight text-xs p-1" title="Tela Cheia">
+              <i class="fa-solid fa-expand"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== APPLE HOME MOSAIC (CARDS DE CÂMERAS) ==================== -->
+      <div class="px-5 pt-5 space-y-3">
+        <div class="flex items-center justify-between px-1">
+          <span class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Câmeras Conectadas</span>
+          <span class="text-[11px] text-ios-blueLight font-medium" id="ios-camera-count">Carregando...</span>
+        </div>
+
+        <div id="ios-cameras-grid" class="grid grid-cols-2 gap-3">
+          <!-- Câmeras renderizadas dinamicamente em Cards Apple Squircle -->
+        </div>
+      </div>
+
+      <!-- ==================== LINHA DO TEMPO APPLE (GRAVAÇÕES) ==================== -->
+      <div id="section-playback" class="px-5 pt-6 space-y-3">
+        <div class="ios-glass p-4 rounded-[26px] space-y-3">
+          <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-film text-ios-blueLight text-xs"></i>
+              <span class="text-xs font-bold text-white">Linha do Tempo Gravador</span>
+            </div>
+            <span class="text-[10px] text-zinc-400 font-mono">HD Intelbras OK</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <input type="date" id="ios-date-input" class="bg-black/60 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-ios-blueLight w-full">
+            <input type="time" value="14:30" class="bg-black/60 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-ios-blueLight w-28">
+          </div>
+
+          <!-- Scrubbing Bar Estilo Apple Photos -->
+          <div class="space-y-1 pt-1">
+            <div class="flex justify-between text-[9px] text-zinc-500 font-mono">
+              <span>00:00</span>
+              <span>06:00</span>
+              <span class="text-ios-blueLight font-bold">12:00</span>
+              <span>18:00</span>
+              <span>23:59</span>
+            </div>
+            <div class="h-6 bg-black rounded-xl overflow-hidden flex border border-white/10 cursor-pointer relative p-0.5">
+              <div class="w-[35%] bg-ios-green/60 rounded-lg h-full"></div>
+              <div class="w-[5%] bg-transparent h-full"></div>
+              <div class="w-[60%] bg-ios-green/60 rounded-lg h-full"></div>
+              <div class="absolute left-[54%] top-0 bottom-0 w-1 bg-ios-blueLight shadow-lg rounded-full"></div>
+            </div>
+            <span class="text-[9px] text-zinc-400 block text-right">Verde = Gravação contínua salva</span>
+          </div>
+
+          <button onclick="triggerHapticFeedback('Buscando vídeo gravado no DVR...')" class="w-full py-2.5 bg-ios-blue hover:bg-ios-blueLight text-white rounded-xl text-xs font-bold transition shadow-lg flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-play text-[11px]"></i> Assistir Gravação
+          </button>
+        </div>
+      </div>
+
+      <!-- ==================== BANNER CONTATO PLANTÃO NOC 24H ==================== -->
+      <div class="px-5 pt-4">
+        <a href="https://wa.me/5511999999999" target="_blank" class="ios-glass p-3.5 rounded-[22px] flex items-center justify-between hover:border-white/30 transition group">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-ios-green">
+              <i class="fa-brands fa-whatsapp text-base"></i>
+            </div>
+            <div>
+              <span class="text-xs font-bold text-white block">Plantão Help Segurança 24h</span>
+              <span class="text-[10px] text-zinc-400">Fale com um operador técnico do NOC</span>
+            </div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs text-zinc-500 group-hover:text-white transition"></i>
+        </a>
+      </div>
+
+      <!-- ==================== BARRA DE NAVEGAÇÃO INFERIOR ESTILO IPHONE DOCK ==================== -->
+      <div class="absolute bottom-3 left-6 right-6 z-40 ios-glass-pill py-2.5 px-4 rounded-full flex items-center justify-around shadow-2xl">
+        <button onclick="scrollSection('hero')" class="flex flex-col items-center gap-0.5 text-ios-blueLight font-semibold text-[10px]">
+          <i class="fa-solid fa-video text-sm"></i>
+          <span>Ao Vivo</span>
+        </button>
+
+        <button onclick="scrollSection('playback')" class="flex flex-col items-center gap-0.5 text-zinc-400 hover:text-white text-[10px] transition">
+          <i class="fa-solid fa-clock-rotate-left text-sm"></i>
+          <span>Gravações</span>
+        </button>
+
+        <button onclick="triggerIosAlertDemo()" class="flex flex-col items-center gap-0.5 text-zinc-400 hover:text-white text-[10px] transition">
+          <i class="fa-solid fa-bell text-sm"></i>
+          <span>Alertas</span>
+        </button>
+
+        <a href="https://wa.me/5511999999999" target="_blank" class="flex flex-col items-center gap-0.5 text-zinc-400 hover:text-ios-green text-[10px] transition">
+          <i class="fa-solid fa-headset text-sm"></i>
+          <span>Central</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- NOTIFICAÇÃO SLIDE-IN ESTILO IPHONE BANNER -->
+  <div id="ios-notification" class="fixed top-12 left-1/2 -translate-x-1/2 z-50 max-w-sm w-full px-4 transition-all duration-500 opacity-0 -translate-y-12 pointer-events-none">
+    <div class="ios-glass p-3.5 rounded-[24px] shadow-2xl flex items-center gap-3 border border-white/20">
+      <div class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shrink-0">
+        <i class="fa-solid fa-shield-halved text-xs"></i>
+      </div>
+      <div class="flex-1">
+        <div class="flex justify-between items-center text-[10px] text-zinc-400">
+          <span class="font-bold text-white uppercase tracking-wider">HelpSeg Notificação</span>
+          <span>Agora</span>
+        </div>
+        <p class="text-xs text-zinc-200 mt-0.5 font-medium" id="notif-text">Alerta: Ronda perimetral concluída com sucesso.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT -->
+  <script>
+    let rawDevices = [];
+    let rawClients = [];
+    let currentFilter = 'all';
+    let isFrameMode = false;
+    let isMuted = false;
+
+    async function initIos() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('ios-date-input').value = today;
+      await fetchIosData();
+      setInterval(fetchIosData, 5000);
+    }
+
+    async function fetchIosData() {
+      try {
+        const res = await fetch(`/api/status?client_id=${currentFilter}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        rawDevices = data.devices || [];
+        rawClients = data.clients || [];
+
+        document.getElementById('ios-camera-count').innerText = `${rawDevices.filter(d => d.status === 'ONLINE').length} Online`;
+        document.getElementById('island-cam-status').innerText = `${rawDevices.length} Câmeras`;
+
+        populateIosSites();
+        renderIosCards();
+
+        if (rawDevices.length > 0 && document.getElementById('ios-hero-img').src.includes('default.jpg')) {
+          setHeroCamera(rawDevices[0].id);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function populateIosSites() {
+      const select = document.getElementById('ios-site-select');
+      const val = select.value;
+      let html = '<option value="all" class="bg-zinc-900 text-white">🏢 Todos os Locais</option>';
+      rawClients.forEach(c => {
+        html += `<option value="${c.id}" class="bg-zinc-900 text-white">${c.name}</option>`;
+      });
+      select.innerHTML = html;
+      select.value = val || 'all';
+    }
+
+    function onIosSiteChange() {
+      currentFilter = document.getElementById('ios-site-select').value;
+      fetchIosData();
+    }
+
+    function renderIosCards() {
+      const grid = document.getElementById('ios-cameras-grid');
+      if (!grid) return;
+
+      if (rawDevices.length === 0) {
+        grid.innerHTML = '<div class="col-span-2 text-center text-zinc-500 py-8 text-xs">Nenhuma câmera disponível.</div>';
+        return;
+      }
+
+      grid.innerHTML = rawDevices.map(d => {
+        const isOnline = d.status === 'ONLINE';
+        const pulse = isOnline ? '<span class="w-1.5 h-1.5 rounded-full bg-ios-green animate-pulse"></span>' : '<span class="w-1.5 h-1.5 rounded-full bg-ios-red"></span>';
+
+        return `
+          <div onclick="setHeroCamera('${d.id}')" class="ios-card ios-glass rounded-[22px] overflow-hidden p-2 flex flex-col gap-2 cursor-pointer border border-white/10 hover:border-white/25">
+            <div class="relative aspect-video bg-black rounded-[16px] overflow-hidden">
+              <img src="${d.snapshot_url}" class="w-full h-full object-cover">
+              <div class="absolute top-1.5 left-1.5 bg-black/60 px-2 py-0.5 rounded-full text-[9px] font-semibold text-white flex items-center gap-1">
+                ${pulse} CH ${d.channel || 1}
+              </div>
+            </div>
+            <div class="px-1 pb-1 flex items-center justify-between">
+              <span class="text-xs font-bold text-white truncate max-w-[120px]">${d.name}</span>
+              <i class="fa-solid fa-play text-[9px] text-zinc-500"></i>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function setHeroCamera(camId) {
+      const cam = rawDevices.find(d => d.id === camId);
+      if (!cam) return;
+      document.getElementById('ios-hero-img').src = cam.snapshot_url;
+      document.getElementById('ios-hero-title').innerText = cam.name;
+      scrollSection('hero');
+    }
+
+    function toggleIslandExpand() {
+      const exp = document.getElementById('island-expanded');
+      exp.classList.toggle('hidden');
+    }
+
+    function toggleFrameMode() {
+      const container = document.getElementById('iphone-container');
+      const text = document.getElementById('frame-toggle-text');
+      isFrameMode = !isFrameMode;
+
+      if (isFrameMode) {
+        container.classList.add('iphone-frame');
+        text.innerText = "Modo Tela Cheia";
+      } else {
+        container.classList.remove('iphone-frame');
+        text.innerText = "Ver no Formato iPhone";
+      }
+    }
+
+    function triggerHapticFeedback(msg) {
+      alert(msg);
+    }
+
+    function toggleIosAudio() {
+      const btn = document.getElementById('ios-audio-btn');
+      isMuted = !isMuted;
+      btn.innerHTML = isMuted ? '<i class="fa-solid fa-volume-xmark text-ios-red"></i>' : '<i class="fa-solid fa-volume-high text-ios-green"></i>';
+    }
+
+    function fullscreenIos() {
+      const img = document.getElementById('ios-hero-img');
+      if (img.requestFullscreen) img.requestFullscreen();
+    }
+
+    function triggerIosAlertDemo() {
+      const notif = document.getElementById('ios-notification');
+      notif.classList.remove('opacity-0', '-translate-y-12', 'pointer-events-none');
+      setTimeout(() => {
+        notif.classList.add('opacity-0', '-translate-y-12', 'pointer-events-none');
+      }, 4000);
+    }
+
+    function scrollSection(target) {
+      if (target === 'playback') {
+        document.getElementById('section-playback').scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', initIos);
+  </script>
+</body>
+</html>

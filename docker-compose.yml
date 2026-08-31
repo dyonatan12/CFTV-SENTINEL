@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  cftv-monitor:
+    build:
+      context: ./cftv-monitor-v2
+      dockerfile: Dockerfile
+    container_name: cftv-sentinel-monitor
+    restart: unless-stopped
+    ports:
+      - "${SERVER_PORT:-8001}:8001"
+    env_file:
+      - .env
+    environment:
+      - WHATSAPP_API_URL=http://whatsapp-gateway:8080
+    volumes:
+      - ./data/snapshots:/app/snapshots
+      - ./data/config/cameras.json:/app/cameras.json
+      - ./data/config/clients.json:/app/clients.json
+      - ./data/config/settings.json:/app/settings.json
+      - ./data/config/users.json:/app/users.json
+      - ./data/logs:/app/logs
+    networks:
+      - cftv-net
+    depends_on:
+      whatsapp-gateway:
+        condition: service_healthy
+
+  whatsapp-gateway:
+    build:
+      context: ./whatsapp-gateway
+      dockerfile: Dockerfile
+    container_name: cftv-sentinel-whatsapp
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data/whatsapp-session:/app/.wwebjs_auth
+    networks:
+      - cftv-net
+
+networks:
+  cftv-net:
+    driver: bridge

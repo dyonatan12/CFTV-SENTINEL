@@ -2,8 +2,8 @@ import os
 import asyncio
 import httpx
 from datetime import datetime
-from PIL import Image, ImageDraw, ImageFont
-from security_utils import decrypt_secret
+from PIL import Image, ImageDraw
+from core.security import decrypt_secret
 
 try:
     import cv2
@@ -11,10 +11,11 @@ try:
 except ImportError:
     HAS_OPENCV = False
 
-SNAPSHOT_DIR = os.path.join(os.path.dirname(__file__), "snapshots")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SNAPSHOT_DIR = os.path.join(BASE_DIR, "snapshots")
 os.makedirs(SNAPSHOT_DIR, exist_ok=True)
 
-# Semáforo global para requisições de snapshot (máximo 4 simultâneas para não estressar os DVRs)
+# Semáforo global para requisições de snapshot (máximo 4 simultâneas)
 SNAPSHOT_SEMAPHORE = asyncio.Semaphore(4)
 
 def get_rtsp_url(camera_data: dict) -> str:
@@ -106,7 +107,7 @@ async def capture_snapshot(camera_data: dict, is_mock: bool = False) -> tuple[bo
     channel = camera_data.get("channel", 1)
 
     async with SNAPSHOT_SEMAPHORE:
-        # 1. TENTA VIA HTTP CGI INTELBRAS (timeout equilibrado de 3.5s)
+        # 1. HTTP CGI
         snapshot_url = camera_data.get("snapshot_url")
         if not snapshot_url:
             snapshot_url = f"http://{ip}:{http_port}/cgi-bin/snapshot.cgi?channel={channel}"
@@ -119,19 +120,18 @@ async def capture_snapshot(camera_data: dict, is_mock: bool = False) -> tuple[bo
                     resp = await client.get(snapshot_url, auth=httpx.BasicAuth(username, password))
 
                 if resp.status_code == 200 and resp.headers.get("content-type", "").startswith("image"):
-                    if len(resp.content) > 1000: # Foto válida (mais de 1KB)
+                    if len(resp.content) > 1000:
                         temp_path = f"{output_path}.tmp"
                         with open(temp_path, "wb") as f:
                             f.write(resp.content)
                         os.replace(temp_path, output_path)
                         return True, f"/snapshots/{output_filename}"
                 elif resp.status_code == 400:
-                    # 400 no NVR Intelbras significa especificamente "Host não encontrado / Sem Sinal"
                     return False, "Câmera desconectada do NVR (Host não encontrado)"
         except Exception:
             pass
 
-        # 2. TENTA VIA FLUXO RTSP SE HTTP FALHAR (rápido com OpenCV)
+        # 2. RTSP OpenCV
         if HAS_OPENCV:
             try:
                 rtsp_url = get_rtsp_url(camera_data)
@@ -144,7 +144,6 @@ async def capture_snapshot(camera_data: dict, is_mock: bool = False) -> tuple[bo
             except Exception:
                 pass
 
-    # Se já temos uma foto anterior salva no disco, preserva ela
     if os.path.exists(output_path):
         return False, f"/snapshots/{output_filename}"
 

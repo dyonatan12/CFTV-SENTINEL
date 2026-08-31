@@ -178,5 +178,19 @@
     "username": "testeloja",
     "password": "help12345",
     "snapshot_url": "http://10.3.152.10:80/cgi-bin/snapshot.cgi?channel=16"
+  },
+  {
+    "id": "cam-449b87",
+    "name": "Cam Portaria",
+    "ip": "192.168.1.88",
+    "port": 554,
+    "http_port": 80,
+    "nvr": "N/A",
+    "channel": 1,
+    "client_id": "default",
+    "username": "admin",
+    "password": "segredo_da_cam",
+    "snapshot_url": "",
+    "client_name": "Geral"
   }
 ]

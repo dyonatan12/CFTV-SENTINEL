@@ -1,0 +1,35 @@
+name: Build e Validação Docker
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  docker-build:
+    name: Validar Build de Imagens Docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build da Imagem CFTV Monitor v2.0
+        uses: docker/build-push-action@v5
+        with:
+          context: ./cftv-monitor-v2
+          file: ./cftv-monitor-v2/Dockerfile
+          push: false
+          tags: cftv-monitor-v2:latest
+
+      - name: Build da Imagem WhatsApp Gateway
+        uses: docker/build-push-action@v5
+        with:
+          context: ./whatsapp-gateway
+          file: ./whatsapp-gateway/Dockerfile
+          push: false
+          tags: cftv-whatsapp-gateway:latest

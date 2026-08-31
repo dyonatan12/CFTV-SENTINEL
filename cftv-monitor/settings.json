@@ -1,16 +1,16 @@
 {
   "server_port": 8000,
-  "check_interval": 45,
-  "connection_timeout": 3.5,
-  "failure_threshold": 2,
-  "recovery_threshold": 1,
-  "max_concurrent_checks": 8,
-  "cameras_file": "C:\\Users\\MONITORAMNETO\\.gemini\\antigravity\\scratch\\cftv-monitor\\cameras.json",
-  "log_file": "C:\\Users\\MONITORAMNETO\\.gemini\\antigravity\\scratch\\cftv-monitor\\cftv_monitor.log",
+  "check_interval": 30,
+  "connection_timeout": 3.0,
+  "failure_threshold": 3,
+  "recovery_threshold": 2,
+  "max_concurrent_checks": 16,
+  "cameras_file": "cameras.json",
+  "log_file": "cftv_monitor.log",
   "telegram": {
     "enabled": false,
-    "bot_token": "8766208201:AAGhCGn5dJTH-ZV5zo1hBS6EJJeXQpFwCUs",
-    "chat_id": "1649051973",
+    "bot_token": "",
+    "chat_id": "",
     "send_snapshot": true
   },
   "whatsapp": {
@@ -19,13 +19,7 @@
     "api_url": "http://localhost:8080",
     "api_key": "",
     "instance_name": "cftv",
-    "target_number": "5533999120697",
+    "target_number": "",
     "send_snapshot": true
-  },
-  "templates": {
-    "camera_down": "🚨 *HELPSEG INFORMA: CÂMERA OFFLINE!*\n\n📸 *Câmera:* {camera_name}\n🌐 *IP:* {camera_ip}:{camera_port}\n📼 *Gravador:* {nvr_name} (Canal {channel})\n⚠️ *Status:* Desconectada ({failures} falhas)\n🕒 *Horário:* {timestamp}",
-    "camera_recovered": "✅ *HELPSEG INFORMA: CÂMERA ONLINE!*\n\n📸 *Câmera:* {camera_name}\n🌐 *IP:* {camera_ip}\n📼 *Gravador:* {nvr_name} (Canal {channel})\n🕒 *Horário:* {timestamp}",
-    "nvr_down": "🚨 *ALERTA CRÍTICO: GRAVADOR OFFLINE!*\n\n📼 *Gravador:* {nvr_name}\n🌐 *IP:* {camera_ip}\n⚠️ *Status:* Gravador desconectou ({offline_count}/{total_channels} canais sem sinal)\n🕒 *Horário:* {timestamp}",
-    "nvr_recovered": "✅ *HELPSEG INFORMA: GRAVADOR ONLINE!*\n\n📼 *Gravador:* {nvr_name}\n🌐 *IP:* {camera_ip}\n📶 *Status:* Gravador e todos os {total_channels} canais restabelecidos com sucesso\n🕒 *Horário:* {timestamp}"
   }
 }

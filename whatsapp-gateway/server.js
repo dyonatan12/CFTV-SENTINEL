@@ -462,6 +462,28 @@ app.post('/send', async (req, res) => {
     }
 });
 
+// ROTA GET: /health e /status (Health Check)
+app.get('/health', (req, res) => {
+    res.json({
+        status: "ok",
+        service: "whatsapp-gateway",
+        connected: isConnected,
+        connectedNumber: connectedNumber,
+        queueLength: messageQueue.length,
+        timestamp: new Date().toISOString()
+    });
+});
+
+app.get('/status', (req, res) => {
+    res.json({
+        status: isConnected ? "connected" : (currentQrCode ? "qr_ready" : "initializing"),
+        connected: isConnected,
+        connectedNumber: connectedNumber,
+        queueLength: messageQueue.length,
+        knownGroupsCount: Object.keys(knownGroups).length
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`[CFTV-WhatsApp] Servidor HTTP pronto em http://localhost:${PORT}`);
 });

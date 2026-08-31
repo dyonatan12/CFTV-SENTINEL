@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "CFTV Sentinel v2.0 Architecture",
+    "output": "cftv-sentinel-architecture.html",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "monitoring-flow", "label": "Ciclo de Varredura", "focus": ["operator", "dashboard", "fastapi", "engine", "cftv_network"], "note": "Sondagem periódica de câmeras e DVRs em tempo real." },
+      { "id": "event-alerts", "label": "Pipeline de Alertas", "focus": ["fastapi", "eventbus", "sqlite", "notifier", "telegram", "whatsapp"], "note": "Anti-flapping, persistência SQLite e notificação multicanal." },
+      { "id": "security-obs", "label": "Segurança e Métricas", "focus": ["operator", "auth", "fastapi", "prometheus"], "note": "Autenticação JWT, PBKDF2 e métricas Prometheus." }
+    ]
+  },
+  "components": [
+    { "id": "operator", "type": "external", "label": "Operador NOC", "sublabel": "Navegador Web", "pos": [40, 300], "size": [120, 60] },
+    { "id": "auth", "type": "security", "label": "Auth / RBAC", "sublabel": "JWT + PBKDF2", "pos": [40, 150], "size": [120, 64], "tag": "AES-256" },
+    { "id": "dashboard", "type": "frontend", "label": "Painel Web", "sublabel": "Tailwind + SSE", "pos": [250, 300], "size": [130, 60] },
+    { "id": "fastapi", "type": "backend", "label": "FastAPI Core", "sublabel": "Porta :8001", "pos": [460, 300], "size": [130, 60] },
+    { "id": "prometheus", "type": "external", "label": "Prometheus", "sublabel": "GET /metrics", "pos": [460, 450], "size": [130, 60], "tag": "Métricas" },
+    { "id": "engine", "type": "backend", "label": "Probe Engine", "sublabel": "Asyncio + OpenCV", "pos": [680, 300], "size": [130, 60] },
+    { "id": "cftv_network", "type": "external", "label": "DVRs & Câmeras", "sublabel": "TCP :37777 / RTSP", "pos": [900, 300], "size": [130, 60] },
+    { "id": "eventbus", "type": "messagebus", "label": "Event Bus", "sublabel": "Pub/Sub Async", "pos": [680, 450], "size": [130, 60] },
+    { "id": "sqlite", "type": "database", "label": "SQLite DB", "sublabel": "alerts.db", "pos": [900, 450], "size": [130, 60] },
+    { "id": "notifier", "type": "backend", "label": "Alert Notifier", "sublabel": "Template Engine", "pos": [680, 150], "size": [130, 60] },
+    { "id": "telegram", "type": "cloud", "label": "Telegram Bot", "sublabel": "Canal NOC", "pos": [900, 80], "size": [130, 60] },
+    { "id": "whatsapp", "type": "cloud", "label": "WhatsApp Gateway", "sublabel": "Baileys / Evolution", "pos": [900, 200], "size": [130, 60] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "CFTV Sentinel Platform (Docker :8001)", "wraps": ["dashboard", "fastapi", "engine", "eventbus", "sqlite", "notifier"] }
+  ],
+  "connections": [
+    { "id": "op-to-dash", "from": "operator", "to": "dashboard", "label": "HTTP", "variant": "emphasis" },
+    { "id": "auth-login", "from": "dashboard", "to": "auth", "label": "login", "variant": "security", "fromSide": "top", "toSide": "bottom", "labelDy": -68 },
+    { "id": "dash-to-api", "from": "dashboard", "to": "fastapi", "label": "REST + SSE" },
+    { "id": "metrics-pull", "from": "fastapi", "to": "prometheus", "label": "scrape", "variant": "dashed", "fromSide": "bottom", "toSide": "top", "labelDy": 58 },
+    { "id": "api-to-engine", "from": "fastapi", "to": "engine", "label": "varredura" },
+    { "id": "probe-cftv", "from": "engine", "to": "cftv_network", "label": "RTSP / TCP", "variant": "emphasis" },
+    { "id": "emit-events", "from": "engine", "to": "eventbus", "label": "publish", "fromSide": "bottom", "toSide": "top", "labelDy": 58 },
+    { "id": "persist-alert", "from": "eventbus", "to": "sqlite", "label": "persist", "variant": "dashed" },
+    { "id": "dispatch-notify", "from": "engine", "to": "notifier", "label": "alerta", "fromSide": "top", "toSide": "bottom", "labelDy": -68 },
+    { "id": "tg-alert", "from": "notifier", "to": "telegram", "label": "NOC", "fromSide": "right", "toSide": "left" },
+    { "id": "wa-alert", "from": "notifier", "to": "whatsapp", "label": "Clientes", "fromSide": "right", "toSide": "left" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Dashboard & API", "items": ["Painel Web moderno com Tailwind CSS e SSE", "Endpoints REST FastAPI para controle de Câmeras e Clientes"] },
+    { "dot": "emerald", "title": "Engine de Monitoramento", "items": ["Sondagem paralela assíncrona com semáforo", "Filtro anti-flapping com máquina de estados finitos"] },
+    { "dot": "rose", "title": "Segurança & Alertas", "items": ["Autenticação JWT com PBKDF2 e senhas criptografadas em repouso (AES-256)", "Despacho multicanal via Telegram e WhatsApp"] }
+  ]
+}

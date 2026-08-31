@@ -1,17 +1,5 @@
 [
   {
-    "id": "cam-ca002f",
-    "name": "Bim Roça",
-    "ip": "10.3.152.11",
-    "port": 554,
-    "http_port": 80,
-    "nvr": "Acesse 2",
-    "channel": 1,
-    "username": "testeloja",
-    "password": "help12345",
-    "snapshot_url": ""
-  },
-  {
     "id": "cam-9fbc1f",
     "name": "Acesse 2 - Canal 02",
     "ip": "10.3.152.11",

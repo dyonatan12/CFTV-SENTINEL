@@ -1,0 +1,39 @@
+name: Testes Automatizados (CI)
+
+on:
+  push:
+    branches: [ main, master, dev ]
+  pull_request:
+    branches: [ main, master, dev ]
+
+jobs:
+  test:
+    name: Rodar Pytest no CFTV Monitor v2.0
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Instalar Dependências do Sistema (OpenCV)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 libglib2.0-0
+
+      - name: Instalar Dependências Python
+        run: |
+          cd cftv-monitor-v2
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio
+
+      - name: Executar Suíte de Testes
+        run: |
+          cd cftv-monitor-v2
+          python -m pytest tests/ -v

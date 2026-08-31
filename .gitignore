@@ -7,7 +7,19 @@ __pycache__/
 env/
 venv/
 ENV/
-*.env
+.venv/
+
+# Environment Variables & Secrets (CRÍTICO: Nunca comitar credenciais)
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.crt
+*.pfx
+users.json
+cftv-monitor-v2/users.json
+cftv-monitor/users.json
 
 # Node.js & NPM
 node_modules/
@@ -34,6 +46,12 @@ cftv-monitor-v2/snapshots/nvr-*.jpg
 **/snapshots/nvr-*.jpg
 **/snapshots/test_*.jpg
 **/snapshots/*.tmp
+
+# Databases SQLite
+*.db
+*.sqlite
+*.sqlite3
+cftv-monitor-v2/cftv_sentinel.db
 
 # Logs & Temporários
 *.log

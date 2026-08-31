@@ -1,129 +1,108 @@
-# 🛡️ CFTV Sentinel - Central de Monitoramento NOC & Alertas Inteligentes
+# 🛡️ CFTV Sentinel NOC v2.0 — Central de Monitoramento & Alertas Inteligentes
 
-Sistema completo de monitoramento em tempo real para infraestrutura de **CFTV (Câmeras IP, NVRs e DVRs Intelbras/Dahua/Hikvision)** com diagnóstico híbrido, suporte Multi-Clientes (v2.0), snapshots ao vivo e despacho de alertas automatizados via **WhatsApp (com Anti-Ban e Grupos)** e **Telegram**.
+Sistema completo e corporativo de monitoramento em tempo real para infraestrutura de **CFTV (Câmeras IP, NVRs e DVRs Intelbras, Dahua, Hikvision)** com diagnóstico híbrido ultrarrápido, suporte Multi-Clientes (*Multi-Tenant*), snapshots ao vivo, histórico de incidentes em SQLite e despacho de alertas automatizados via **WhatsApp (com Anti-Ban e Grupos)** e **Telegram**.
 
 ---
 
-## 🚀 Arquitetura do Sistema
+## 🚀 O que há de Novo na Versão 2.0
+
+* 🔒 **Segurança & RBAC:** Autenticação JWT com PBKDF2-SHA256, papéis de acesso (`admin`, `operator`, `viewer`), rate limiting anti-força bruta e criptografia AES-256 para senhas de DVR/Câmeras.
+* 🏛️ **Arquitetura Modular Limpa:** Camadas desacopladas (`core/`, `models/`, `state/`, `routes/`, `tests/`) com barramento assíncrono de eventos (*EventBus/Pub-Sub*).
+* 🐳 **Docker & Docker Compose:** Imagens otimizadas com Chromium/Puppeteer e healthchecks automáticos.
+* 💾 **Histórico de Incidentes em SQLite:** Gravação automática de eventos de queda/recuperação com exportação de relatórios em CSV.
+* 📊 **Métricas Prometheus & Observabilidade:** Endpoints `/api/health`, `/api/ready` e `/metrics` prontos para integração com Grafana.
+* 🧪 **Suíte de Testes Automatizados:** 19 testes automatizados com Pytest e CI/CD no GitHub Actions.
+
+---
+
+## 📂 Estrutura do Repositório
 
 ```
-📁 scratch/
-├── 📂 cftv-monitor/          -> v1.0: Monitoramento Monolítico (Porta 8000)
-├── 📂 cftv-monitor-v2/       -> v2.0: Central Multi-Clientes / Multi-Tenant (Porta 8001)
-├── 📂 whatsapp-gateway/      -> Microserviço Gateway de WhatsApp Web (Porta 8080)
-├── 📄 .gitignore             -> Proteção de credenciais, sessões e arquivos de mídia
-└── 📄 README.md              -> Documentação Completa
+📁 CFTV-CENTINEL/
+├── 📂 cftv-monitor-v2/         -> Central Multi-Clientes / FastAPI (Porta 8001)
+│   ├── 📂 core/                -> Diagnóstico, Tracker, Notifier, EventBus, Auth, DB
+│   ├── 📂 models/              -> Modelos Pydantic (schemas.py)
+│   ├── 📂 routes/              -> Rotas modulares (auth, cameras, clients, alerts, health)
+│   ├── 📂 state/               -> Gerenciamento centralizado de estado (app_state.py)
+│   ├── 📂 tests/               -> Suíte completa de testes (pytest)
+│   └── 📄 Dockerfile           -> Container Python 3.11 com OpenCV
+├── 📂 whatsapp-gateway/        -> Microserviço Gateway de WhatsApp Web (Porta 8080)
+│   ├── 📄 server.js            -> Motor WhatsApp-Web.js com 5 camadas Anti-Ban
+│   └── 📄 Dockerfile           -> Container Node.js com Chromium
+├── 📂 docs/                    -> Documentação técnica completa
+│   ├── 📄 ARCHITECTURE.md      -> Diagramas de arquitetura e fluxo de dados
+│   ├── 📄 API.md               -> Referência de endpoints e exemplos curl
+│   └── 📄 DOCKER.md            -> Guia detalhado de deploy com Docker
+├── 📄 docker-compose.yml       -> Orquestração de todos os microserviços
+├── 📄 .env.example             -> Modelo de variáveis de ambiente e segurança
+├── 📄 ROADMAP.md               -> Visão e planejamento de novas versões
+├── 📄 CONTRIBUTING.md          -> Guia de contribuição
+└── 📄 README.md                -> Apresentação principal
 ```
 
 ---
 
-## ✨ Principais Funcionalidades
+## ⚡ Como Executar
 
-### 1. 🔍 Diagnóstico Híbrido Ultrarrápido & Snapshots Reais
-* **HTTP CGI + RTSP OpenCV (Porta 554):** Captura imagens reais dos canais do gravador em menos de 500ms.
-* **Detecção Cirúrgica de Canais:** Identifica canais vazios ou sem sinal (ex: `HTTP 400 Host não encontrado`) marcando-os como **🔴 OFFLINE** sem falsos positivos.
-* **Prevenção de Sobrecarga:** Semáforo de concorrência que impede o travamento da CPU dos gravadores.
-* **Visualização Sem Flickering:** DOM diffing cirúrgico com atualização suave de status e fotos.
+### Opção 1: Via Docker Compose (Recomendado para Produção)
 
-### 2. 🏢 Central Multi-Clientes (v2.0 - Porta 8001)
-* **Gestão de Empresas/Clientes:** Cadastre clientes com contatos e números dedicados.
-* **Cadastro em Lote de Gravadores:** Gere todos os canais de um DVR (ex: 1 ao 16) e vincule à empresa com 1 clique.
-* **Filtros por Empresa:** Visualize o mosaico de câmeras de um cliente específico ou a visão geral do NOC.
-* **Alertas Personalizados:** Envie notificações da queda de uma loja diretamente para o gerente daquela unidade e para a equipe de segurança.
-
-### 3. 💬 Gateway WhatsApp Local com Proteção Anti-Ban & Grupos (Porta 8080)
-* **Sem Necessidade de API Paga:** Utiliza motor `whatsapp-web.js` com sessão persistente via `LocalAuth`.
-* **5 Camadas Anti-Ban:**
-  1. Fila de despacho sequencial com intervalo humano aleatório (3s a 5s).
-  2. Simulação real de digitação (*composing*).
-  3. Cooldown de 10 minutos por câmera (anti-flapping).
-  4. Limite de intervalo por destinatário.
-  5. Agrupador inteligente de alertas de NVR.
-* **Suporte Completo a Grupos (`@g.us`):** Descobre e envia alertas diretamente para grupos de plantão e segurança.
-
-### 4. 🤖 Notificações no Telegram
-* Bot integrado com suporte a mensagens formatadas em Markdown e snapshots anexados.
-
----
-
-## 🛠️ Como Instalar e Executar
-
-### Pré-requisitos
-* **Python 3.10+** (com OpenCV, FastAPI, Uvicorn, Pillow, HTTPX, Pydantic)
-* **Node.js 18+** (para o Gateway do WhatsApp)
-* **Google Chrome** instalado (usado pelo Puppeteer)
-
-### 1. Instalar Dependências do Python
+1. Clone o repositório e crie o arquivo de ambiente:
 ```bash
-cd cftv-monitor-v2
-pip install fastapi uvicorn httpx pillow opencv-python pydantic requests
+git clone https://github.com/dyonatan12/CFTV-CENTINEL.git
+cd CFTV-CENTINEL
+cp .env.example .env
 ```
 
-### 2. Instalar Dependências do WhatsApp Gateway
+2. Inicie todos os serviços:
+```bash
+docker compose up -d --build
+```
+
+3. Acesse os serviços no navegador:
+* 🌐 **Painel Central NOC (v2.0):** [http://localhost:8001](http://localhost:8001)
+* 📱 **Gateway WhatsApp & Leitor de QR Code:** [http://localhost:8080](http://localhost:8080)
+* 🩺 **Health Check:** [http://localhost:8001/api/health](http://localhost:8001/api/health)
+* 📊 **Métricas Prometheus:** [http://localhost:8001/metrics](http://localhost:8001/metrics)
+
+---
+
+### Opção 2: Execução Local Direta (Desenvolvimento)
+
+#### 1. Iniciar o Gateway do WhatsApp (Node.js):
 ```bash
 cd whatsapp-gateway
 npm install
+npm start
 ```
 
----
-
-## 🚦 Como Iniciar
-
-### Iniciar o Gateway do WhatsApp:
-```bash
-cd whatsapp-gateway
-node server.js
-```
-> Acesse **http://localhost:8080** para escanear o QR Code no primeiro uso.
-
-### Iniciar o Monitor v2.0 (Multi-Clientes):
+#### 2. Iniciar o Monitor CFTV (Python / FastAPI):
 ```bash
 cd cftv-monitor-v2
+pip install -r requirements.txt
 python app.py
 ```
-> Acesse o painel web em: **http://localhost:8001**
 
-### Iniciar o Monitor v1.0 (Cliente Único):
+---
+
+## 🧪 Rodando os Testes Automatizados
+
 ```bash
-cd cftv-monitor
-python app.py
-```
-> Acesse o painel web em: **http://localhost:8000**
-
----
-
-## 📋 Variáveis & Configurações (`settings.json`)
-
-Você pode configurar todos os parâmetros diretamente pela interface web (ícone de engrenagem ⚙️ **Ajustes**) ou no arquivo `settings.json`:
-
-```json
-{
-  "check_interval": 45,
-  "connection_timeout": 3.5,
-  "failure_threshold": 2,
-  "recovery_threshold": 1,
-  "whatsapp": {
-    "enabled": true,
-    "provider": "evolution",
-    "api_url": "http://localhost:8080",
-    "instance_name": "cftv-gateway",
-    "api_key": "cftv-secret-key",
-    "target_number": "5511999998888"
-  },
-  "telegram": {
-    "enabled": true,
-    "bot_token": "YOUR_BOT_TOKEN",
-    "chat_id": "YOUR_CHAT_ID"
-  }
-}
+cd cftv-monitor-v2
+python -m pytest tests/ -v
 ```
 
 ---
 
-## 🛡️ Segurança & Privacidade
-* As pastas `.wwebjs_auth/` e os arquivos de cache de mídia e snapshots são ignorados via `.gitignore` para garantir que nenhuma credencial ou imagem sensível seja enviada ao repositório.
+## 📚 Documentação Adicional
+
+* 🏛️ [Arquitetura e Fluxo de Dados (docs/ARCHITECTURE.md)](docs/ARCHITECTURE.md)
+* 📖 [Manual da API REST (docs/API.md)](docs/API.md)
+* 🐳 [Guia do Docker Compose (docs/DOCKER.md)](docs/DOCKER.md)
+* 🗺️ [Roadmap do Projeto (ROADMAP.md)](ROADMAP.md)
+* 🤝 [Como Contribuir (CONTRIBUTING.md)](CONTRIBUTING.md)
 
 ---
 
 ## 📄 Licença
-Distribuído sob a licença **MIT**.
+
+Distribuído sob a licença MIT. Consulte `LICENSE` para obter mais informações.

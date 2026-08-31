@@ -31,18 +31,21 @@
   <!-- Top Navbar -->
   <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40 px-6 py-4 flex flex-wrap items-center justify-between shadow-lg gap-4">
     <div class="flex items-center space-x-3">
-      <div class="bg-indigo-600 p-2.5 rounded-xl text-white shadow-md shadow-indigo-600/30">
-        <i class="fa-solid fa-video text-xl"></i>
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-sky-500 p-0.5 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+        <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
+          <i class="fa-solid fa-shield-halved text-indigo-400 text-lg"></i>
+        </div>
       </div>
       <div>
-        <h1 class="text-xl font-bold tracking-wide flex items-center gap-2">
-          CFTV Monitor
+        <h1 class="text-xl font-black tracking-tight flex items-center gap-2">
+          Help<span class="text-indigo-400">Seg</span> Monitor
+          <span class="bg-indigo-500/20 text-indigo-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-indigo-500/30">HELP SEGURANÇA</span>
           <button onclick="toggleExecutionMode()" id="mode-badge" title="Clique para alternar entre Modo Real e Simulação" class="text-xs px-2.5 py-0.5 rounded-full bg-blue-900/60 hover:bg-blue-800 text-blue-300 border border-blue-700 transition cursor-pointer flex items-center gap-1.5">
             <i class="fa-solid fa-flask text-[10px]"></i>
             <span id="mode-text">Online</span>
           </button>
         </h1>
-        <p class="text-xs text-slate-400">Monitoramento Contínuo & Alertas em Tempo Real</p>
+        <p class="text-xs text-slate-400">Monitoramento 24/7 • 128 Câmeras & Gravadores IP</p>
       </div>
     </div>
 
@@ -331,8 +334,11 @@
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-slate-300 mb-1">Número Destinatário (com DDI e DDD)</label>
-              <input type="text" id="set-wa-target" placeholder="Ex: 5511999999999" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-emerald-500 focus:outline-none">
+              <label class="block text-xs font-semibold text-slate-300 mb-1">
+                Destinatário: Número ou ID do Grupo de WhatsApp
+              </label>
+              <input type="text" id="set-wa-target" placeholder="Ex: 5511999999999 ou 1203630248239@g.us" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-emerald-500 focus:outline-none">
+              <span class="text-[10px] text-slate-400 block mt-1">Para enviar para o grupo da equipe interna, cole o ID do grupo (@g.us).</span>
             </div>
 
             <label class="flex items-center gap-2.5 cursor-pointer">

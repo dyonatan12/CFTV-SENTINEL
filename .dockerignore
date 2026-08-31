@@ -1,0 +1,29 @@
+# Git & IDE
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+npm-debug.log
+.wwebjs_auth/
+.wwebjs_cache/
+
+# Local media & logs
+snapshots/*.jpg
+snapshots/*.tmp
+*.log
+data/
