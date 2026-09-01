@@ -11,6 +11,21 @@ class ClientModel(BaseModel):
     lat: Optional[float] = None
     lng: Optional[float] = None
     notes: Optional[str] = ""
+    
+    # Novos Campos CRM (Fase 2.1)
+    status: str = "ativo" # "ativo" ou "cancelado"
+    document: Optional[str] = "" # CPF/CNPJ
+    address: Optional[str] = ""
+    install_date: Optional[str] = ""
+    
+    # Dados de Acesso do Cliente
+    cloud_user: Optional[str] = ""
+    cloud_password: Optional[str] = ""
+    
+    # Equipamentos
+    camera_model: Optional[str] = ""
+    additional_equipment: Optional[str] = "" # switch, roteador, filtro de linha
+    dvr_host: Optional[str] = "" # Onde a câmera está sendo gravada na base
 
 # --- MODELOS DE CÂMERAS ---
 class CameraModel(BaseModel):

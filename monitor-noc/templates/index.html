@@ -290,14 +290,61 @@
           <input type="hidden" id="form-client-id">
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <div class="md:col-span-2">
+              <h4 class="text-sm font-bold text-indigo-400 border-b border-slate-800 pb-1 mb-2">1. Dados Pessoais & Endereço</h4>
+            </div>
+
             <div class="md:col-span-2">
               <label class="block text-xs font-semibold text-slate-300 mb-1">Nome da Empresa / Cliente *</label>
-              <input type="text" id="form-client-name" placeholder="Ex: Supermercado Alvorada ou Condomínio Solar" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+              <input type="text" id="form-client-name" placeholder="Ex: Supermercado Alvorada" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Status do Cliente</label>
+              <select id="form-client-status" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+                <option value="ativo">🟢 Ativo</option>
+                <option value="cancelado">🔴 Cancelado</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">CPF / CNPJ</label>
+              <input type="text" id="form-client-document" placeholder="Ex: 00.000.000/0001-00" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Endereço Completo</label>
+              <input type="text" id="form-client-address" placeholder="Ex: Rua X, 123, Bairro Y" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
             </div>
 
             <div>
               <label class="block text-xs font-semibold text-slate-300 mb-1">Nome do Contato / Responsável</label>
               <input type="text" id="form-client-contact" placeholder="Ex: Sr. Marcos (Gerente)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">WhatsApp (com DDI e DDD) *</label>
+              <input type="text" id="form-client-whatsapp" placeholder="Ex: 5511999998888" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+            </div>
+
+            <div class="md:col-span-2 mt-2">
+              <h4 class="text-sm font-bold text-indigo-400 border-b border-slate-800 pb-1 mb-2">2. Instalação & Equipamentos</h4>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Data da Instalação</label>
+              <input type="date" id="form-client-install-date" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Câmera(s) / Equipamentos de Vídeo</label>
+              <input type="text" id="form-client-camera-model" placeholder="Ex: 2x VIP 1230 B, 1x VIP 3230 D" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Equipamentos Adicionais (Rede, Energia, etc)</label>
+              <input type="text" id="form-client-additional" placeholder="Ex: Switch 8 portas, Nobreak 600VA" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
             </div>
 
             <div>
@@ -310,9 +357,23 @@
               <input type="number" step="any" id="form-client-lng" placeholder="Ex: -47.9218" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
             </div>
 
+            <div class="md:col-span-2 mt-2">
+              <h4 class="text-sm font-bold text-indigo-400 border-b border-slate-800 pb-1 mb-2">3. Acesso Cloud & Monitoramento</h4>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Servidor / DVR Base da HelpSeg</label>
+              <input type="text" id="form-client-dvr-host" placeholder="Ex: NVR Principal Loja - Canal 15" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+            </div>
+
             <div>
-              <label class="block text-xs font-semibold text-slate-300 mb-1">WhatsApp (com DDI e DDD) *</label>
-              <input type="text" id="form-client-whatsapp" placeholder="Ex: 5511999998888" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Usuário Cloud do Cliente</label>
+              <input type="text" id="form-client-cloud-user" placeholder="Ex: joao_silva" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Senha Cloud do Cliente</label>
+              <input type="text" id="form-client-cloud-pass" placeholder="Ex: senha@123" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
             </div>
 
             <div class="md:col-span-2 bg-slate-950 p-4 rounded-xl border border-slate-800">
@@ -1389,22 +1450,36 @@
 
       tbody.innerHTML = filtered.map(c => {
         const camCount = devicesData.filter(d => d.client_id === c.id).length;
+        const isCancelled = c.status === 'cancelado';
+        const nameClass = isCancelled ? "text-rose-400 line-through" : "text-slate-200 font-bold";
+        const statusBadge = isCancelled 
+          ? `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/30 px-2 py-0.5 rounded text-[10px] font-bold ml-2">Cancelado</span>` 
+          : ``;
+
         const notifyBadge = c.notify_client 
           ? `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded text-[10px] font-bold">ATIVO</span>`
           : `<span class="bg-slate-800 text-slate-500 px-2 py-0.5 rounded text-[10px]">DESATIVADO</span>`;
 
         return `
-          <tr class="hover:bg-slate-800/40">
-            <td class="p-3 font-bold text-slate-100">${c.name}</td>
-            <td class="p-3 text-slate-300">${c.contact_name || 'N/A'}</td>
-            <td class="p-3 text-emerald-400">${c.whatsapp || 'N/A'}</td>
-            <td class="p-3 text-center">${notifyBadge}</td>
-            <td class="p-3 text-center font-bold text-indigo-400">${camCount}</td>
-            <td class="p-3 text-right">
-              <button onclick="editClientById('${c.id}')" class="p-1.5 hover:bg-slate-800 rounded text-indigo-400 mr-1"><i class="fa-solid fa-pen-to-square"></i></button>
-              <button onclick="deleteClientById('${c.id}')" class="p-1.5 hover:bg-slate-800 rounded text-rose-400"><i class="fa-solid fa-trash-can"></i></button>
+          <tr class="hover:bg-slate-800/50 transition">
+            <td class="p-3 border-r border-slate-800/50">
+              <span class="${nameClass}">${c.name}</span>
+              ${statusBadge}
+              ${c.dvr_host ? `<br><span class="text-[10px] text-slate-500 font-mono">Host: ${c.dvr_host}</span>` : ''}
             </td>
-          </tr>`;
+            <td class="p-3 border-r border-slate-800/50">${c.contact_name || '-'}</td>
+            <td class="p-3 border-r border-slate-800/50">${c.whatsapp || '-'}</td>
+            <td class="p-3 text-center border-r border-slate-800/50">${notifyBadge}</td>
+            <td class="p-3 text-center border-r border-slate-800/50">
+              <span class="bg-indigo-500/10 text-indigo-300 font-black px-2.5 py-1 rounded-lg">${camCount}</span>
+            </td>
+            <td class="p-3 text-right">
+              <button onclick="editClientById('${c.id}')" class="text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-lg transition font-semibold">
+                Editar / View
+              </button>
+            </td>
+          </tr>
+        `;
       }).join('');
     }
 
@@ -1428,10 +1503,22 @@
 
       document.getElementById('form-client-id').value = c.id;
       document.getElementById('form-client-name').value = c.name;
+      document.getElementById('form-client-status').value = c.status || 'ativo';
+      document.getElementById('form-client-document').value = c.document || '';
+      document.getElementById('form-client-address').value = c.address || '';
       document.getElementById('form-client-contact').value = c.contact_name || '';
+      document.getElementById('form-client-whatsapp').value = c.whatsapp || '';
+      
+      document.getElementById('form-client-install-date').value = c.install_date || '';
+      document.getElementById('form-client-camera-model').value = c.camera_model || '';
+      document.getElementById('form-client-additional').value = c.additional_equipment || '';
       document.getElementById('form-client-lat').value = c.lat || '';
       document.getElementById('form-client-lng').value = c.lng || '';
-      document.getElementById('form-client-whatsapp').value = c.whatsapp || '';
+      
+      document.getElementById('form-client-dvr-host').value = c.dvr_host || '';
+      document.getElementById('form-client-cloud-user').value = c.cloud_user || '';
+      document.getElementById('form-client-cloud-pass').value = c.cloud_password || '';
+
       document.getElementById('form-client-notify').checked = !!c.notify_client;
       document.getElementById('form-client-notes').value = c.notes || '';
 
@@ -1444,22 +1531,36 @@
     async function submitClientForm() {
       const id = document.getElementById('form-client-id').value;
       const name = document.getElementById('form-client-name').value.trim();
-      const contact_name = document.getElementById('form-client-contact').value.trim();
-      let lat = parseFloat(document.getElementById('form-client-lat').value.trim());
-      let lng = parseFloat(document.getElementById('form-client-lng').value.trim());
-      const whatsapp = document.getElementById('form-client-whatsapp').value.trim();
-      const notify_client = document.getElementById('form-client-notify').checked;
-      const notes = document.getElementById('form-client-notes').value.trim();
+      
+      const payload = {
+        name,
+        status: document.getElementById('form-client-status').value,
+        document: document.getElementById('form-client-document').value.trim(),
+        address: document.getElementById('form-client-address').value.trim(),
+        contact_name: document.getElementById('form-client-contact').value.trim(),
+        whatsapp: document.getElementById('form-client-whatsapp').value.trim(),
+        
+        install_date: document.getElementById('form-client-install-date').value,
+        camera_model: document.getElementById('form-client-camera-model').value.trim(),
+        additional_equipment: document.getElementById('form-client-additional').value.trim(),
+        lat: parseFloat(document.getElementById('form-client-lat').value.trim()),
+        lng: parseFloat(document.getElementById('form-client-lng').value.trim()),
+        
+        dvr_host: document.getElementById('form-client-dvr-host').value.trim(),
+        cloud_user: document.getElementById('form-client-cloud-user').value.trim(),
+        cloud_password: document.getElementById('form-client-cloud-pass').value.trim(),
+        
+        notify_client: document.getElementById('form-client-notify').checked,
+        notes: document.getElementById('form-client-notes').value.trim()
+      };
 
-      if (isNaN(lat)) lat = null;
-      if (isNaN(lng)) lng = null;
+      if (isNaN(payload.lat)) payload.lat = null;
+      if (isNaN(payload.lng)) payload.lng = null;
 
       if (!name) {
         alert('Por favor, informe o Nome da Empresa / Cliente.');
         return;
       }
-
-      const payload = { name, contact_name, lat, lng, whatsapp, notify_client, notes };
 
       try {
         await ensureAuthenticated();
