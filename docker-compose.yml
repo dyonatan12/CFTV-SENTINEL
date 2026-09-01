@@ -3,7 +3,7 @@ version: '3.8'
 services:
   cftv-monitor:
     build:
-      context: ./cftv-monitor-v2
+      context: ./monitor-noc
       dockerfile: Dockerfile
     container_name: cftv-sentinel-monitor
     restart: unless-stopped
