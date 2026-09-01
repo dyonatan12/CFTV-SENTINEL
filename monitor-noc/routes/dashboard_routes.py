@@ -62,7 +62,10 @@ async def get_snapshot_image(filename: str):
 
     return Response(status_code=404)
 
-@router.get("/api/status")
+from core.auth import get_current_active_user
+from fastapi import Depends
+
+@router.get("/api/status", dependencies=[Depends(get_current_active_user)])
 async def get_status(client_id: Optional[str] = None):
     GLOBAL_STATE.ensure_tracker_initialized()
     if not GLOBAL_STATE.tracker:

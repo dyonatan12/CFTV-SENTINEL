@@ -8,6 +8,8 @@ class ClientModel(BaseModel):
     contact_name: Optional[str] = ""
     whatsapp: Optional[str] = ""
     notify_client: Optional[bool] = True
+    lat: Optional[float] = None
+    lng: Optional[float] = None
     notes: Optional[str] = ""
 
 # --- MODELOS DE CÂMERAS ---

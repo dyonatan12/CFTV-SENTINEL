@@ -7,8 +7,9 @@
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
   <script>
     tailwind.config = {
@@ -92,6 +93,10 @@
           <i class="fa-solid fa-mobile-screen"></i>
           <span>App Cliente</span>
         </a>
+        <button onclick="openMapModal()" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 shadow-lg shadow-cyan-600/30 transition hidden" id="header-btn-map">
+          <i class="fa-solid fa-map-location-dot"></i>
+          <span>Mapa NOC</span>
+        </button>
 
         <button onclick="openClientsModal()" class="bg-indigo-950/70 hover:bg-indigo-900/80 text-indigo-300 border border-indigo-700/50 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 shadow transition">
           <i class="fa-solid fa-users"></i>
@@ -199,6 +204,27 @@
 
   </main>
 
+  <!-- ==================== MODAL MAPA NOC (LEAFLET) ==================== -->
+  <div id="map-modal" class="fixed inset-0 z-[60] bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-6xl h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950">
+        <div class="flex items-center gap-3">
+          <div class="bg-cyan-600/20 text-cyan-400 p-2.5 rounded-xl border border-cyan-500/30">
+            <i class="fa-solid fa-map-location-dot text-lg"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-100">Mapa Georreferenciado (NOC)</h3>
+            <p class="text-xs text-slate-400">Visualização geográfica da estabilidade dos clientes</p>
+          </div>
+        </div>
+        <button onclick="closeMapModal()" class="text-slate-400 hover:text-slate-200 text-lg p-1.5 rounded-lg hover:bg-slate-800 transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div id="map-container" class="w-full flex-1 bg-slate-800 relative z-0"></div>
+    </div>
+  </div>
+
   <!-- ==================== MODAL GESTÃO DE CLIENTES (v2.0) ==================== -->
   <div id="clients-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
@@ -272,6 +298,16 @@
             <div>
               <label class="block text-xs font-semibold text-slate-300 mb-1">Nome do Contato / Responsável</label>
               <input type="text" id="form-client-contact" placeholder="Ex: Sr. Marcos (Gerente)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Latitude (Mapa)</label>
+              <input type="number" step="any" id="form-client-lat" placeholder="Ex: -15.8267" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Longitude (Mapa)</label>
+              <input type="number" step="any" id="form-client-lng" placeholder="Ex: -47.9218" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:border-indigo-500 focus:outline-none">
             </div>
 
             <div>
@@ -920,6 +956,38 @@
     </div>
   </div>
 
+  <!-- ==================== MODAL DE LOGIN ==================== -->
+  <div id="login-modal" class="fixed inset-0 z-[100] bg-slate-950 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm p-8 shadow-2xl">
+      <div class="text-center mb-6">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-indigo-600 to-sky-500 p-0.5 flex items-center justify-center shadow-lg shadow-indigo-500/20 mb-4">
+          <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
+            <i class="fa-solid fa-shield-halved text-indigo-400 text-2xl"></i>
+          </div>
+        </div>
+        <h2 class="text-xl font-black text-white">Acesso Restrito NOC</h2>
+        <p class="text-xs text-slate-400 mt-1">Identifique-se para gerenciar o sistema</p>
+      </div>
+
+      <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Usuário</label>
+          <input type="text" id="login-user" required placeholder="admin" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:border-indigo-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Senha</label>
+          <input type="password" id="login-pass" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:border-indigo-500 focus:outline-none">
+        </div>
+        <div id="login-error" class="hidden text-xs text-rose-400 font-semibold bg-rose-950/30 border border-rose-900/50 p-2 rounded-lg text-center">
+          Credenciais inválidas.
+        </div>
+        <button type="submit" id="login-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-right-to-bracket"></i> Entrar
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- ==================== JAVASCRIPT PRINCIPAL ==================== -->
   <script>
     let devicesData = [];
@@ -928,10 +996,134 @@
     let currentClientFilter = 'all';
     let currentActiveCamId = null;
 
+    // --- AUTHENTICATION ---
+    function getAuthHeaders(extraHeaders = {}) {
+      const token = localStorage.getItem('noc_token');
+      return {
+        'Authorization': `Bearer ${token}`,
+        ...extraHeaders
+      };
+    }
+
+    async function ensureAuthenticated() {
+      const token = localStorage.getItem('noc_token');
+      if (!token) {
+        showLoginModal();
+        return new Promise(() => {}); // Block execution
+      }
+      
+      // Verify token
+      try {
+        const res = await fetch('/api/auth/me', { headers: getAuthHeaders() });
+        if (!res.ok) {
+          localStorage.removeItem('noc_token');
+          showLoginModal();
+          return new Promise(() => {});
+        }
+      } catch (e) {
+        // Network error, let it pass or block? Let's just block to be safe.
+      }
+    }
+
+    function showLoginModal() {
+      document.getElementById('login-modal').classList.remove('hidden');
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('login-user').value;
+      const pass = document.getElementById('login-pass').value;
+      const errDiv = document.getElementById('login-error');
+      const btn = document.getElementById('login-btn');
+      
+      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Aguarde...';
+      errDiv.classList.add('hidden');
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: user, password: pass })
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          localStorage.setItem('noc_token', data.access_token);
+          document.getElementById('login-modal').classList.add('hidden');
+          location.reload(); // Reload to start dashboard properly
+        } else {
+          errDiv.classList.remove('hidden');
+          btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Entrar';
+        }
+      } catch (err) {
+        errDiv.innerText = "Erro de conexão ao servidor.";
+        errDiv.classList.remove('hidden');
+        btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Entrar';
+      }
+    }
+    // -----------------------
+
     async function initDashboard() {
       await ensureAuthenticated();
       await fetchStatus();
+      
+      // Load map button visibility based on settings
+      const st = await fetch('/api/settings', { headers: getAuthHeaders() }).then(r => r.ok ? r.json() : null);
+      if (st && st.features && st.features.geofence_map) {
+        document.getElementById('header-btn-map').classList.remove('hidden');
+      }
+
       setupSSE();
+    }
+
+    let leafletMap = null;
+    let mapMarkers = [];
+
+    function openMapModal() {
+      document.getElementById('map-modal').classList.remove('hidden');
+      if (!leafletMap) {
+        // Inicializa o mapa focado no Brasil
+        leafletMap = L.map('map-container').setView([-14.235, -51.925], 4);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(leafletMap);
+      }
+      // Evita bug de mapa cinza no Leaflet
+      setTimeout(() => {
+        leafletMap.invalidateSize();
+        renderMapMarkers();
+      }, 300);
+    }
+
+    function closeMapModal() {
+      document.getElementById('map-modal').classList.add('hidden');
+    }
+
+    function renderMapMarkers() {
+      if (!leafletMap) return;
+      
+      // Limpa os marcadores antigos
+      mapMarkers.forEach(m => leafletMap.removeLayer(m));
+      mapMarkers = [];
+
+      clientsData.forEach(client => {
+        if (client.lat && client.lng) {
+          // Descobre o status do cliente (se alguma camera dele ta offline)
+          const cDevs = devicesData.filter(d => d.client_id === client.id);
+          const hasOffline = cDevs.some(d => d.status === 'OFFLINE' || d.status === 'PENDING');
+          const color = hasOffline ? '#f43f5e' : '#10b981'; // Rose for offline, Emerald for online
+
+          const markerHtml = `
+            <div style="background-color: ${color}; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.5);"></div>
+          `;
+          const icon = L.divIcon({ html: markerHtml, className: '', iconSize: [24,24], iconAnchor: [12,12] });
+          
+          const marker = L.marker([client.lat, client.lng], { icon: icon }).addTo(leafletMap);
+          marker.bindPopup(`<b>${client.name}</b><br>${cDevs.length} câmeras<br>Status: ${hasOffline ? 'Instável/Offline' : 'Online'}`);
+          mapMarkers.push(marker);
+        }
+      });
     }
 
     async function fetchStatus() {
@@ -1237,6 +1429,8 @@
       document.getElementById('form-client-id').value = c.id;
       document.getElementById('form-client-name').value = c.name;
       document.getElementById('form-client-contact').value = c.contact_name || '';
+      document.getElementById('form-client-lat').value = c.lat || '';
+      document.getElementById('form-client-lng').value = c.lng || '';
       document.getElementById('form-client-whatsapp').value = c.whatsapp || '';
       document.getElementById('form-client-notify').checked = !!c.notify_client;
       document.getElementById('form-client-notes').value = c.notes || '';
@@ -1251,16 +1445,21 @@
       const id = document.getElementById('form-client-id').value;
       const name = document.getElementById('form-client-name').value.trim();
       const contact_name = document.getElementById('form-client-contact').value.trim();
+      let lat = parseFloat(document.getElementById('form-client-lat').value.trim());
+      let lng = parseFloat(document.getElementById('form-client-lng').value.trim());
       const whatsapp = document.getElementById('form-client-whatsapp').value.trim();
       const notify_client = document.getElementById('form-client-notify').checked;
       const notes = document.getElementById('form-client-notes').value.trim();
+
+      if (isNaN(lat)) lat = null;
+      if (isNaN(lng)) lng = null;
 
       if (!name) {
         alert('Por favor, informe o Nome da Empresa / Cliente.');
         return;
       }
 
-      const payload = { name, contact_name, whatsapp, notify_client, notes };
+      const payload = { name, contact_name, lat, lng, whatsapp, notify_client, notes };
 
       try {
         await ensureAuthenticated();
