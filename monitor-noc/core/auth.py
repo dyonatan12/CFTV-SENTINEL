@@ -148,7 +148,7 @@ class UserManager:
 
     def create_initial_admin(self):
         initial_user = os.getenv("INITIAL_ADMIN_USERNAME", "admin").strip()
-        initial_pass = os.getenv("INITIAL_ADMIN_PASSWORD", "admin_cftv_change_me!").strip()
+        initial_pass = os.getenv("INITIAL_ADMIN_PASSWORD", "help12345").strip()
         initial_name = os.getenv("INITIAL_ADMIN_NAME", "Administrador Central").strip()
         
         pwd_hash, salt = hash_password(initial_pass)
