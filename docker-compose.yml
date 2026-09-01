@@ -5,7 +5,7 @@ services:
     build:
       context: ./monitor-noc
       dockerfile: Dockerfile
-    container_name: cftv-sentinel-monitor
+    container_name: cftv-sentinel-monitor-noc
     restart: unless-stopped
     ports:
       - "${SERVER_PORT:-8001}:8001"
@@ -25,6 +25,22 @@ services:
     depends_on:
       whatsapp-gateway:
         condition: service_healthy
+
+  cftv-monitor-dedicado:
+    build:
+      context: ./monitor-dedicado
+      dockerfile: Dockerfile
+    container_name: cftv-sentinel-monitor-dedicado
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - WHATSAPP_API_URL=http://whatsapp-gateway:8080
+    volumes:
+      - ./data/snapshots-dedicado:/app/snapshots
+      - ./data/config/cameras_128.json:/app/cameras_128.json
+    networks:
+      - cftv-net
 
   whatsapp-gateway:
     build:
