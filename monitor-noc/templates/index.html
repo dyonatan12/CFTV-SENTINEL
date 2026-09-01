@@ -608,7 +608,10 @@
           <i class="fa-brands fa-whatsapp text-emerald-400"></i> WhatsApp (NOC & Clientes)
         </button>
         <button onclick="switchSettingsTab('tab-set-templates')" id="set-btn-templates" class="set-tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition flex items-center gap-2">
-          <i class="fa-solid fa-envelope-open-text text-amber-400"></i> Modelos de Mensagem
+          <i class="fa-solid fa-envelope-open-text text-amber-400"></i> Templates
+        </button>
+        <button onclick="switchSettingsTab('tab-set-advanced')" id="set-btn-advanced" class="set-tab-btn px-4 py-2 text-xs font-semibold rounded-t-lg border-b-2 border-transparent text-fuchsia-400 hover:text-fuchsia-300 transition flex items-center gap-2">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Módulos Avançados
         </button>
       </div>
 
@@ -794,7 +797,93 @@
               <textarea id="tpl-noc-nvr-rec" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-slate-200 font-mono"></textarea>
             </div>
           </div>
+        </div>
 
+        <!-- ABA 5: MODULOS AVANCADOS NOC -->
+        <div id="tab-set-advanced" class="hidden space-y-4">
+          <div class="bg-fuchsia-950/30 border border-fuchsia-800/40 p-3.5 rounded-xl text-xs text-fuchsia-300 flex items-start gap-2.5">
+            <i class="fa-solid fa-wand-magic-sparkles text-xl mt-0.5"></i>
+            <div>
+              <strong>Módulos NOC (Fase 2):</strong><br>
+              Ative ou desative ferramentas operacionais avançadas. Módulos pesados devem ser desativados caso o servidor apresente lentidão.
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <!-- MODO MANUTENCAO -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+              <label class="flex items-center gap-2.5 cursor-pointer">
+                <input type="checkbox" id="feat-maintenance" class="w-4 h-4 rounded text-fuchsia-600 focus:ring-0 bg-slate-900 border-slate-700">
+                <span class="text-xs font-bold text-slate-200">Modo de Manutenção (Silenciar)</span>
+              </label>
+              <p class="text-[10px] text-slate-500 pl-6">Permite colocar câmeras em pausa de alertas.</p>
+            </div>
+
+            <!-- OPENCV -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+              <label class="flex items-center gap-2.5 cursor-pointer">
+                <input type="checkbox" id="feat-opencv" class="w-4 h-4 rounded text-fuchsia-600 focus:ring-0 bg-slate-900 border-slate-700">
+                <span class="text-xs font-bold text-slate-200">Visão (IA / OpenCV)</span>
+              </label>
+              <p class="text-[10px] text-slate-500 pl-6">Analisa snapshots para detectar câmeras cegas ou escuras.</p>
+            </div>
+
+            <!-- ONVIF REBOOT -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+              <label class="flex items-center gap-2.5 cursor-pointer">
+                <input type="checkbox" id="feat-onvif" class="w-4 h-4 rounded text-fuchsia-600 focus:ring-0 bg-slate-900 border-slate-700">
+                <span class="text-xs font-bold text-slate-200">Reboot (ONVIF)</span>
+              </label>
+              <p class="text-[10px] text-slate-500 pl-6">Permite reiniciar câmeras travadas via SOAP/ONVIF.</p>
+            </div>
+
+            <!-- LEAFLET MAP -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+              <label class="flex items-center gap-2.5 cursor-pointer">
+                <input type="checkbox" id="feat-map" class="w-4 h-4 rounded text-fuchsia-600 focus:ring-0 bg-slate-900 border-slate-700">
+                <span class="text-xs font-bold text-slate-200">Mapa (Leaflet)</span>
+              </label>
+              <p class="text-[10px] text-slate-500 pl-6">Visualizar clientes offline/online geograficamente.</p>
+            </div>
+
+            <!-- CGI BACKUP -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+              <label class="flex items-center gap-2.5 cursor-pointer">
+                <input type="checkbox" id="feat-backup" class="w-4 h-4 rounded text-fuchsia-600 focus:ring-0 bg-slate-900 border-slate-700">
+                <span class="text-xs font-bold text-slate-200">Backup CGI</span>
+              </label>
+              <p class="text-[10px] text-slate-500 pl-6">Download automático do (.backup) dos NVRs.</p>
+            </div>
+
+            <!-- CGI HDD -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+              <label class="flex items-center gap-2.5 cursor-pointer">
+                <input type="checkbox" id="feat-hdd" class="w-4 h-4 rounded text-fuchsia-600 focus:ring-0 bg-slate-900 border-slate-700">
+                <span class="text-xs font-bold text-slate-200">Status dos HDs</span>
+              </label>
+              <p class="text-[10px] text-slate-500 pl-6">Status dos HDs nos NVRs para identificar falhas.</p>
+            </div>
+
+            <!-- CONTINUOUS DISCOVERY -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+              <label class="flex items-center gap-2.5 cursor-pointer">
+                <input type="checkbox" id="feat-discovery" class="w-4 h-4 rounded text-fuchsia-600 focus:ring-0 bg-slate-900 border-slate-700">
+                <span class="text-xs font-bold text-slate-200">Discovery Contínuo</span>
+              </label>
+              <p class="text-[10px] text-slate-500 pl-6">Verifica novos IPs na rede diaramente.</p>
+            </div>
+
+            <!-- AUTH -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+              <label class="flex items-center gap-2.5 cursor-pointer">
+                <input type="checkbox" id="feat-auth" class="w-4 h-4 rounded text-fuchsia-600 focus:ring-0 bg-slate-900 border-slate-700">
+                <span class="text-xs font-bold text-slate-200">Auditoria & Login</span>
+              </label>
+              <p class="text-[10px] text-slate-500 pl-6">Exige senha para acessar o painel NOC.</p>
+            </div>
+
+          </div>
         </div>
 
       </div>

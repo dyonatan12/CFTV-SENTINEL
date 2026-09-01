@@ -22,5 +22,15 @@
     "instance_name": "cftv",
     "target_number": "",
     "send_snapshot": true
+  },
+  "features": {
+    "maintenance_mode": true,
+    "opencv_blind_check": false,
+    "onvif_reboot": true,
+    "geofence_map": true,
+    "auto_backup": false,
+    "hdd_health_check": true,
+    "continuous_discovery": false,
+    "auth_login": false
   }
 }
