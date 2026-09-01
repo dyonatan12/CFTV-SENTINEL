@@ -85,7 +85,7 @@ services:
     container_name: cftv-sentinel-grafana
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3005:3000"
     volumes:
       - ./data/grafana:/var/lib/grafana
     environment:
